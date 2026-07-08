@@ -1,6 +1,7 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
+import { isAdminUser } from '@/lib/admin'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -38,6 +39,11 @@ export default function DashboardPage() {
       }
 
       setUser(authData.user)
+
+      if (isAdminUser(authData.user)) {
+        router.push('/admin')
+        return
+      }
 
       // Get user's orders
       const { data: ordersData, error: ordersError } = await supabase
