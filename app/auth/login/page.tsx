@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { isAdminUser } from '@/lib/admin'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -31,8 +32,7 @@ export default function LoginPage() {
       if (error) throw error
       
       // Check if user is admin
-      const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@theimpetus.com'
-      if (email === ADMIN_EMAIL) {
+      if (isAdminUser(email)) {
         router.push('/admin')
       } else {
         router.push('/dashboard')
