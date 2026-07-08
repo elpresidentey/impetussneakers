@@ -36,10 +36,10 @@ export default function AdminPage() {
       return
     }
     
-    const isUserAdmin = isAdminUser(user.email)
+    const isUserAdmin = isAdminUser(user)
     
     if (!isUserAdmin) {
-      router.push('/')
+      router.push('/dashboard')
       return
     }
     
