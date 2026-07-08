@@ -1,8 +1,13 @@
 import { updateSession } from '@/lib/supabase/proxy'
+import { addSecurityHeaders } from '@/lib/security'
 import { type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request)
+  // Update Supabase session
+  const response = await updateSession(request)
+  
+  // Add security headers
+  return addSecurityHeaders(response)
 }
 
 export const config = {

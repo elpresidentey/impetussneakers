@@ -1,12 +1,20 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Lato } from 'next/font/google'
 import './globals.css'
+import { CartProvider } from '@/contexts/cart-context'
+import { WishlistProvider } from '@/contexts/wishlist-context'
+import { ToastProvider } from '@/contexts/toast-context'
+import { ErrorBoundary } from '@/components/error-boundary'
+import { AnalyticsProvider } from '@/contexts/analytics-context'
+import { AuthProvider } from '@/contexts/auth-context'
+import { UIProvider } from '@/contexts/ui-context'
+import { Toast } from '@/components/toast'
 
-const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const lato = Lato({
+  weight: ['300', '400', '700', '900'],
   subsets: ['latin'],
+  variable: '--font-lato',
 })
 
 export const metadata: Metadata = {
@@ -38,9 +46,24 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} dark bg-background`}>
+    <html lang="en" className={`${lato.variable} bg-background`}>
       <body className="font-sans antialiased bg-background text-foreground">
-        {children}
+        <ErrorBoundary>
+          <ToastProvider>
+            <AuthProvider>
+              <AnalyticsProvider>
+                <CartProvider>
+                  <WishlistProvider>
+                    <UIProvider>
+                      {children}
+                    </UIProvider>
+                  </WishlistProvider>
+                </CartProvider>
+              </AnalyticsProvider>
+            </AuthProvider>
+            <Toast />
+          </ToastProvider>
+        </ErrorBoundary>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
