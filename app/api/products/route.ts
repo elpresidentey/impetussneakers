@@ -55,7 +55,19 @@ export async function GET() {
       category: product.category,
     }))
 
-    return NextResponse.json(transformedProducts)
+    const productNames = new Set<string>()
+    const uniqueProducts = transformedProducts.filter((product) => {
+      const normalizedName = product.name.trim().toLocaleLowerCase()
+
+      if (productNames.has(normalizedName)) {
+        return false
+      }
+
+      productNames.add(normalizedName)
+      return true
+    })
+
+    return NextResponse.json(uniqueProducts)
   } catch (error) {
     console.error('Error fetching products:', error)
     return NextResponse.json(
@@ -82,6 +94,23 @@ export async function POST(request: Request) {
     
     // Validate input
     const validatedData = validateInput(createProductSchema, body)
+
+    const { data: existingProducts, error: lookupError } = await supabase
+      .from('products')
+      .select('id')
+      .ilike('name', validatedData.name.trim())
+      .limit(1)
+
+    if (lookupError) {
+      throw lookupError
+    }
+
+    if (existingProducts && existingProducts.length > 0) {
+      return NextResponse.json(
+        { error: 'A product with this name already exists' },
+        { status: 409 }
+      )
+    }
 
     const payload = buildProductPayload(validatedData)
 

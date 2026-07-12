@@ -29,6 +29,7 @@ export function Header({ onSearchOpen, onCartOpen, onAuthOpen }: HeaderProps) {
     { href: '#collections', label: 'Collections' },
     { href: '#shop', label: 'Shop' },
     { href: '/orders', label: 'Orders' },
+    { href: '/vendor', label: 'Sell With Us', isNew: true },
   ]
 
   return (
@@ -49,11 +50,16 @@ export function Header({ onSearchOpen, onCartOpen, onAuthOpen }: HeaderProps) {
               <a
                 key={link.href}
                 href={link.href}
-                className={`px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors duration-200 ${
+                className={`px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-colors duration-200 relative ${
                   isScrolled ? 'text-foreground/62 hover:text-foreground' : 'text-white/70 hover:text-white'
                 }`}
               >
                 {link.label}
+                {link.isNew && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] px-1 rounded-full">
+                    NEW
+                  </span>
+                )}
               </a>
             ))}
           </nav>

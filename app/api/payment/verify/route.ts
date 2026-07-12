@@ -41,7 +41,7 @@ export async function POST(request: Request) {
     // Update order with payment status
     if (paymentData.status === 'success') {
       // Try to find order by payment reference (which is the order_number)
-      const { error } = await supabase
+      const { data: orderData, error } = await supabase
         .from('orders')
         .update({
           payment_status: 'paid',
@@ -50,11 +50,22 @@ export async function POST(request: Request) {
           updated_at: new Date().toISOString(),
         })
         .eq('order_number', paymentData.reference)
+        .select('id, order_number')
+        .single()
 
       if (error) {
         console.error('Error updating order:', error)
         // Don't throw error, payment was successful even if order update failed
       }
+
+      return NextResponse.json({
+        status: paymentData.status,
+        reference: paymentData.reference,
+        amount: paymentData.amount,
+        paid_at: paymentData.paid_at,
+        order_id: orderData?.id,
+        order_number: orderData?.order_number || paymentData.reference,
+      })
     }
 
     return NextResponse.json({

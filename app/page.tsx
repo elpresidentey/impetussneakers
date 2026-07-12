@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Store } from 'lucide-react'
 import { Header } from '@/components/header'
 import { ProductCard } from '@/components/product-card'
 import { QuickViewModal } from '@/components/quick-view-modal'
@@ -45,6 +45,20 @@ interface Product {
   category?: string
 }
 
+function dedupeProducts(products: Product[]): Product[] {
+  const productNames = new Set<string>()
+
+  return products.filter((product) => {
+    const normalizedName = product.name.trim().toLocaleLowerCase()
+
+    if (productNames.has(normalizedName)) {
+      return false
+    }
+
+    productNames.add(normalizedName)
+    return true
+  })
+}
 
 export default function Page() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -66,6 +80,23 @@ export default function Page() {
 
   const shippingCost = 2000
   const taxAmount = Math.round(cartTotal * 0.05)
+  const uniqueProducts = dedupeProducts(products)
+  const collectionProducts = ['new-arrivals', 'hottest', 'featured', 'sale'].reduce<Record<string, Product[]>>(
+    (collections, category) => {
+      const claimedIds = new Set(Object.values(collections).flat().map((product) => product.id))
+      const categoryMatches = uniqueProducts.filter(
+        (product) => product.category === category && !claimedIds.has(product.id)
+      )
+
+      collections[category] = (categoryMatches.length > 0
+        ? categoryMatches
+        : uniqueProducts.filter((product) => !claimedIds.has(product.id))
+      ).slice(0, 4)
+
+      return collections
+    },
+    {}
+  )
 
   const handleCheckout = async (formData: { email: string; name: string; phone: string; address: string }) => {
     if (cartItems.length === 0) {
@@ -131,7 +162,7 @@ export default function Page() {
   }
 
   // Filter and sort products
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = uniqueProducts.filter((product) => {
     if (filterStock === 'in-stock') return product.inStock
     if (filterStock === 'out-of-stock') return !product.inStock
     if (filterCategory !== 'all' && product.category !== filterCategory) return false
@@ -880,13 +911,13 @@ export default function Page() {
             }`}>
               <div className="mx-auto max-w-4xl">
                 <p className="mb-5 text-xs font-semibold uppercase tracking-[0.4em] text-white/80">
-                  The Impetus
+                  Where Heat Lives
                 </p>
                 <h1 className="text-5xl font-black uppercase leading-[0.85] tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl">
-                  Move Different
+                  Stay Laced
                 </h1>
                 <p className="mx-auto mt-7 max-w-xl text-center text-base leading-relaxed text-white/85 md:text-lg">
-                  Curated sneakers, sharp apparel, and limited pieces built for everyday rotation.
+                  Real heat, real prices. From grails to daily rotation - we got your feet covered.
                 </p>
                 <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
                   <button onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} className="group inline-flex min-h-12 items-center justify-center gap-2 bg-white px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-all duration-300 hover:bg-white/90 active:scale-[0.98]">
@@ -975,7 +1006,7 @@ export default function Page() {
                 <div className="flex h-full flex-col justify-between">
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/55">03 / Drop room</p>
                   <div>
-                    <p className="text-6xl font-black leading-none md:text-7xl">{products.length || 24}</p>
+                    <p className="text-6xl font-black leading-none md:text-7xl">{uniqueProducts.length || 24}</p>
                     <h3 className="mt-3 max-w-sm text-2xl font-black uppercase leading-none md:text-4xl">Pieces moving through the store now.</h3>
                     <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/75">
                       See arrivals
@@ -1002,10 +1033,7 @@ export default function Page() {
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
             <div className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-              {(products.filter(p => p.category === 'new-arrivals').length > 0 
-                ? products.filter(p => p.category === 'new-arrivals') 
-                : products.slice(0, 4)
-              ).slice(0, 4).map((product) => (
+              {collectionProducts['new-arrivals'].map((product) => (
                 <ProductCard
                   key={product.id}
                   {...product}
@@ -1030,10 +1058,7 @@ export default function Page() {
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
             <div className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-              {(products.filter(p => p.category === 'hottest').length > 0 
-                ? products.filter(p => p.category === 'hottest') 
-                : products.slice(4, 8)
-              ).slice(0, 4).map((product) => (
+              {collectionProducts.hottest.map((product) => (
                 <ProductCard
                   key={product.id}
                   {...product}
@@ -1058,10 +1083,7 @@ export default function Page() {
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
             <div className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-              {(products.filter(p => p.category === 'featured').length > 0 
-                ? products.filter(p => p.category === 'featured') 
-                : products.slice(8, 12)
-              ).slice(0, 4).map((product) => (
+              {collectionProducts.featured.map((product) => (
                 <ProductCard
                   key={product.id}
                   {...product}
@@ -1086,16 +1108,111 @@ export default function Page() {
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
             <div className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-              {(products.filter(p => p.category === 'sale').length > 0 
-                ? products.filter(p => p.category === 'sale') 
-                : products.slice(12, 16)
-              ).slice(0, 4).map((product) => (
+              {collectionProducts.sale.map((product) => (
                 <ProductCard
                   key={product.id}
                   {...product}
                   onQuickView={() => setQuickViewProduct(product)}
                 />
               ))}
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Vendor Partner Banner */}
+      <section className="relative isolate overflow-hidden bg-black px-4 py-16 text-white md:px-8 md:py-24">
+        <Image
+          src="/hero-sneaker-monochrome.jpg"
+          alt="Streetwear styling and classic sneakers"
+          fill
+          className="-z-20 object-cover object-center opacity-55"
+        />
+        <div className="absolute inset-0 -z-10 bg-black/55" />
+        <div className="relative mx-auto max-w-7xl">
+          <ScrollReveal direction="up" delay={100}>
+            <div className="grid items-end gap-12 md:grid-cols-[1.15fr_0.85fr]">
+              <div className="max-w-2xl">
+                <div className="mb-6 inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em] text-white/70">
+                  <Store className="h-4 w-4" />
+                  <span>Sell with Impetus</span>
+                </div>
+                <h2 className="text-5xl font-black uppercase leading-[0.86] md:text-7xl">
+                  Put your best pairs in front of the right people.
+                </h2>
+                <p className="mt-6 max-w-xl text-base text-white/80 md:text-lg">
+                  Apply to sell verified sneakers and streetwear with a storefront built for discovery.
+                </p>
+                <div className="mb-8 mt-8 grid grid-cols-2 gap-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                    <div className="text-2xl font-bold mb-1">₦2.5M</div>
+                    <div className="text-sm opacity-80">Avg monthly revenue</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+                    <div className="text-2xl font-bold mb-1">10K+</div>
+                    <div className="text-sm opacity-80">Ready customers</div>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-4 sm:flex-row">
+                  <a 
+                    href="/vendor" 
+                    className="group inline-flex h-12 items-center justify-center gap-2 bg-white px-6 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-colors hover:bg-white/85"
+                  >
+                    Start selling
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  </a>
+                </div>
+              </div>
+              
+              <div className="relative">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                  <h3 className="text-2xl font-bold mb-6">Why Choose Us?</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-4">
+                      <div className="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-bold text-green-900">✓</span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-1">Lowest Commission</h4>
+                        <p className="text-sm opacity-80">Only 8% vs 15-20% on other platforms</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-bold text-green-900">✓</span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-1">Built-in Audience</h4>
+                        <p className="text-sm opacity-80">Access to 10,000+ sneaker enthusiasts</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-bold text-green-900">✓</span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-1">Fast Payments</h4>
+                        <p className="text-sm opacity-80">Guaranteed payments within 24 hours</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-bold text-yellow-900">🚀</span>
+                      </div>
+                      <div>
+                        <h4 className="font-semibold mb-1">Limited Time: 5% Commission</h4>
+                        <p className="text-sm opacity-80">First 50 vendors get reduced rate for 6 months</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Floating Stats */}
+                <div className="absolute -top-4 -right-4 bg-yellow-400 text-black p-4 rounded-xl font-bold text-center shadow-xl">
+                  <div className="text-lg">50/50</div>
+                  <div className="text-xs">Spots Left</div>
+                </div>
+              </div>
             </div>
           </ScrollReveal>
         </div>
@@ -1702,7 +1819,7 @@ export default function Page() {
       <SearchModal
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
-        products={products}
+        products={uniqueProducts}
         onProductClick={(product) => setQuickViewProduct(product)}
       />
 

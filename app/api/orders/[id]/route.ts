@@ -3,14 +3,16 @@ import { supabase } from '@/lib/db'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+    
     // Get order details
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (orderError || !order) {
@@ -24,7 +26,7 @@ export async function GET(
     const { data: items, error: itemsError } = await supabase
       .from('order_items')
       .select('*')
-      .eq('order_id', params.id)
+      .eq('order_id', id)
 
     if (itemsError) throw itemsError
 
@@ -43,9 +45,10 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     const { status, payment_status, payment_reference } = body
 
@@ -57,7 +60,7 @@ export async function PATCH(
         payment_reference: payment_reference || undefined,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single()
 

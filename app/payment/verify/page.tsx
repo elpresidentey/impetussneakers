@@ -38,9 +38,18 @@ function PaymentVerifyContent() {
           // Clear cart after successful payment
           clearCart()
           
+          // Find order by reference and redirect to order success page
           setTimeout(() => {
-            router.push('/')
-          }, 3000)
+            // Use the order ID if available, otherwise fall back to order number
+            const orderId = data.order_id
+            const orderNumber = data.order_number || data.reference || reference
+            
+            if (orderId) {
+              router.push(`/order-success?order_id=${orderId}&order_number=${orderNumber}`)
+            } else {
+              router.push(`/order-success?order_number=${orderNumber}`)
+            }
+          }, 2000)
         } else {
           setStatus('error')
           setMessage(data.error || 'Payment verification failed')
@@ -71,7 +80,7 @@ function PaymentVerifyContent() {
               <CheckCircle className="w-16 h-16 mx-auto text-green-500" />
               <h2 className="text-2xl font-bold text-foreground">Payment Successful!</h2>
               <p className="text-foreground/60">{message}</p>
-              <p className="text-sm text-foreground/40">Redirecting to home page...</p>
+              <p className="text-sm text-foreground/40">Redirecting to order confirmation...</p>
             </div>
           )}
 

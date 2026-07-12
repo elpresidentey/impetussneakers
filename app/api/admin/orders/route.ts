@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   }
 
   // Admin auth required
-  const user = requireAdminAuth(request as any)
+  const user = await requireAdminAuth(request as any)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
