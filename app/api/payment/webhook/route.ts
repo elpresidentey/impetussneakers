@@ -4,11 +4,14 @@ import { supabase } from '@/lib/db'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
 
-if (!PAYSTACK_SECRET_KEY) {
-  throw new Error('PAYSTACK_SECRET_KEY environment variable is required')
-}
-
 export async function POST(request: Request) {
+  if (!PAYSTACK_SECRET_KEY) {
+    return NextResponse.json(
+      { error: 'Paystack secret key not configured' },
+      { status: 500 }
+    )
+  }
+
   try {
     const body = await request.text()
     const signature = request.headers.get('x-paystack-signature')

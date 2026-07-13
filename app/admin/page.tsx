@@ -29,6 +29,7 @@ export default function AdminPage() {
   const [editingProduct, setEditingProduct] = useState<any>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+  const [deletingProductId, setDeletingProductId] = useState<number | null>(null)
 
   useEffect(() => {
     if (!user) {
@@ -153,15 +154,16 @@ export default function AdminPage() {
     }
   }
 
-  const deleteProduct = async (productId: number) => {
-    if (!confirm('Are you sure you want to delete this product? This action cannot be undone.')) return
+  const forceDeleteProduct = async (productId: number, skipConfirm = false) => {
+    if (!skipConfirm && !confirm('Delete this product? This will remove it completely including from order history.')) return
 
+    setDeletingProductId(productId)
+    
     try {
-      // Get the Supabase session token
       const supabase = createClient()
       const { data: { session } } = await supabase.auth.getSession()
       
-      const response = await fetch(`/api/products/${productId}`, {
+      const response = await fetch(`/api/products/${productId}/force-delete`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${session?.access_token || ''}`,
@@ -170,18 +172,25 @@ export default function AdminPage() {
         },
       })
 
+      const result = await response.json()
+      
       if (response.ok) {
         setProducts(products.filter(p => p.id !== productId))
         setStats(prev => ({ ...prev, totalProducts: prev.totalProducts - 1 }))
         showNotification('success', 'Product deleted successfully')
       } else {
-        const error = await response.json()
-        showNotification('error', error.error || 'Failed to delete product')
+        showNotification('error', result.error || 'Failed to delete product')
       }
     } catch (error) {
-      console.error('Failed to delete product:', error)
-      showNotification('error', 'Failed to delete product')
+      showNotification('error', `Failed to delete: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    } finally {
+      setDeletingProductId(null)
     }
+  }
+
+  const deleteProduct = async (productId: number) => {
+    // Simply force delete - easier and cleaner
+    await forceDeleteProduct(productId, false)
   }
 
   const handleEditProduct = (product: any) => {
@@ -440,6 +449,45 @@ export default function AdminPage() {
                   </div>
                 </button>
               </div>
+              
+              {/* Admin Tools */}
+              <div className="mt-6 pt-6 border-t border-foreground/10">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-foreground/70 mb-3">Admin Tools</h3>
+                <button
+                  onClick={async () => {
+                    if (!confirm('Remove duplicate products? This will keep the first instance of each product and delete the rest.')) return
+                    
+                    try {
+                      const supabase = createClient()
+                      const { data: { session } } = await supabase.auth.getSession()
+                      
+                      const response = await fetch('/api/admin/remove-duplicates', {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${session?.access_token || ''}`,
+                          'x-admin-email': user?.email || '',
+                        },
+                      })
+                      
+                      const data = await response.json()
+                      
+                      if (response.ok) {
+                        showNotification('success', data.message)
+                        fetchStats() // Refresh products list
+                      } else {
+                        showNotification('error', data.error || 'Failed to remove duplicates')
+                      }
+                    } catch (error) {
+                      console.error('Error removing duplicates:', error)
+                      showNotification('error', 'Failed to remove duplicates')
+                    }
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all font-semibold text-sm"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Remove Duplicate Products
+                </button>
+              </div>
             </div>
 
             {/* Recent Activity */}
@@ -592,9 +640,15 @@ export default function AdminPage() {
                             </button>
                             <button
                               onClick={() => deleteProduct(product.id)}
-                              className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all font-semibold"
+                              disabled={deletingProductId === product.id}
+                              className="flex items-center justify-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed text-white rounded-lg transition-all font-semibold"
+                              title="Delete product"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              {deletingProductId === product.id ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
                             </button>
                           </div>
                         </div>

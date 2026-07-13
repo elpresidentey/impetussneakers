@@ -15,6 +15,7 @@ import { ScrollReveal } from '@/components/scroll-reveal'
 import { PageTransition } from '@/components/page-transition'
 import { useCart } from '@/contexts/cart-context'
 import { useAuth } from '@/contexts/auth-context'
+import { isTestProductName } from '@/lib/catalog'
 
 // Add structured data for SEO
 const structuredData = {
@@ -80,7 +81,9 @@ export default function Page() {
 
   const shippingCost = 2000
   const taxAmount = Math.round(cartTotal * 0.05)
-  const uniqueProducts = dedupeProducts(products)
+  const uniqueProducts = dedupeProducts(products).filter(
+    (product) => !isTestProductName(product.name)
+  )
   const collectionProducts = ['new-arrivals', 'hottest', 'featured', 'sale'].reduce<Record<string, Product[]>>(
     (collections, category) => {
       const claimedIds = new Set(Object.values(collections).flat().map((product) => product.id))
@@ -921,20 +924,20 @@ export default function Page() {
                 </p>
                 <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
                   <button onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} className="group inline-flex min-h-12 items-center justify-center gap-2 bg-white px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-all duration-300 hover:bg-white/90 active:scale-[0.98]">
-                    <span>Shop Now</span>
+                    <span>Cop Your Heat</span>
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                   <button onClick={() => document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth' })} className="inline-flex min-h-12 items-center justify-center border border-white/60 px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-all duration-300 hover:bg-white hover:text-black active:scale-[0.98]">
-                    View Collections
+                    Browse Drops
                   </button>
                 </div>
               </div>
 
               <div className="mx-auto mt-8 flex max-w-3xl flex-col items-center gap-4 border-t border-white/25 pt-5">
                 <div className="grid grid-cols-3 gap-4 text-center text-xs uppercase tracking-[0.18em] text-white/70">
-                  <span>New arrivals</span>
-                  <span>Verified pairs</span>
-                  <span>Fast dispatch</span>
+                  <span>Fresh drops daily</span>
+                  <span>100% authentic</span>
+                  <span>Fast shipping</span>
                 </div>
                 <div className="flex items-center justify-center gap-2">
                   {heroImages.map((_, index) => (
@@ -963,7 +966,7 @@ export default function Page() {
             <div>
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/55">Collections</p>
               <h2 className="max-w-3xl text-4xl font-black uppercase leading-[0.9] tracking-normal text-foreground md:text-6xl lg:text-7xl">
-                Built around the rotation.
+                Built for the culture.
               </h2>
             </div>
           </div>
@@ -980,7 +983,7 @@ export default function Page() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-8">
                   <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-white/70">01 / Statement</p>
-                  <h3 className="max-w-lg text-4xl font-black uppercase leading-none md:text-6xl">Loud pairs, clean styling.</h3>
+                  <h3 className="max-w-lg text-4xl font-black uppercase leading-none md:text-6xl">Heat for your feet.</h3>
                   <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/85">
                     Explore edit
                     <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -998,7 +1001,7 @@ export default function Page() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white">
                   <p className="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/70">02 / Studio</p>
-                  <h3 className="text-3xl font-black uppercase leading-none md:text-4xl">Quiet flex.</h3>
+                  <h3 className="text-3xl font-black uppercase leading-none md:text-4xl">Understated fire.</h3>
                 </div>
               </button>
 
@@ -1007,7 +1010,7 @@ export default function Page() {
                   <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/55">03 / Drop room</p>
                   <div>
                     <p className="text-6xl font-black leading-none md:text-7xl">{uniqueProducts.length || 24}</p>
-                    <h3 className="mt-3 max-w-sm text-2xl font-black uppercase leading-none md:text-4xl">Pieces moving through the store now.</h3>
+                    <h3 className="mt-3 max-w-sm text-2xl font-black uppercase leading-none md:text-4xl">Heat restocking weekly.</h3>
                     <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/75">
                       See arrivals
                       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />

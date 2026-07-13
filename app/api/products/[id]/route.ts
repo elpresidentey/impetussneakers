@@ -190,6 +190,47 @@ export async function DELETE(
   try {
     const { id } = await params
     const lookupId = normalizeId(id)
+    
+    // Check if product has any orders
+    const { data: orderItems, error: checkError } = await supabase
+      .from('order_items')
+      .select('id')
+      .eq('product_id', lookupId)
+      .limit(1)
+
+    if (checkError) {
+      console.error('Error checking order items:', checkError)
+    }
+
+    // If product has orders, mark as out of stock instead of deleting
+    if (orderItems && orderItems.length > 0) {
+      const { data: updatedProduct, error: updateError } = await supabase
+        .from('products')
+        .update({ 
+          in_stock: false, 
+          stock_quantity: 0,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', lookupId)
+        .select()
+        .single()
+
+      if (updateError) {
+        console.error('Error marking product as out of stock:', updateError)
+        return NextResponse.json(
+          { error: 'Cannot delete product with existing orders. Failed to mark as out of stock.' },
+          { status: 400 }
+        )
+      }
+
+      return NextResponse.json({ 
+        message: 'Product has existing orders and cannot be deleted. It has been marked as out of stock instead.',
+        action: 'marked_out_of_stock',
+        product: updatedProduct
+      })
+    }
+
+    // No orders, safe to delete
     const { error } = await supabase
       .from('products')
       .delete()
@@ -197,13 +238,25 @@ export async function DELETE(
 
     if (error) {
       console.error('Supabase delete error:', error)
+      
+      // Handle foreign key constraint error with better message
+      if (error.message.includes('foreign key constraint') || error.message.includes('order_items')) {
+        return NextResponse.json(
+          { error: 'Cannot delete product: it has existing orders. Mark it as out of stock instead.' },
+          { status: 400 }
+        )
+      }
+      
       return NextResponse.json(
         { error: error.message || 'Failed to delete product' },
         { status: 400 }
       )
     }
 
-    return NextResponse.json({ message: 'Product deleted successfully' })
+    return NextResponse.json({ 
+      message: 'Product deleted successfully',
+      action: 'deleted'
+    })
   } catch (error) {
     console.error('Error deleting product:', error)
     return NextResponse.json(

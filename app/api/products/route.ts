@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/db'
 import { requireAdminAuth } from '@/lib/auth'
 import { validateInput, createProductSchema, rateLimit } from '@/lib/validation'
+import { isTestProductName } from '@/lib/catalog'
 
 function buildProductPayload(validatedData: any) {
   const payload: any = {
@@ -59,7 +60,7 @@ export async function GET() {
     const uniqueProducts = transformedProducts.filter((product) => {
       const normalizedName = product.name.trim().toLocaleLowerCase()
 
-      if (productNames.has(normalizedName)) {
+      if (isTestProductName(product.name) || productNames.has(normalizedName)) {
         return false
       }
 
@@ -94,6 +95,13 @@ export async function POST(request: Request) {
     
     // Validate input
     const validatedData = validateInput(createProductSchema, body)
+
+    if (isTestProductName(validatedData.name)) {
+      return NextResponse.json(
+        { error: 'Test catalogue products cannot be created' },
+        { status: 400 }
+      )
+    }
 
     const { data: existingProducts, error: lookupError } = await supabase
       .from('products')

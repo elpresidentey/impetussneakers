@@ -3,10 +3,6 @@ import { supabase } from '@/lib/db'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY
 
-if (!PAYSTACK_SECRET_KEY) {
-  throw new Error('PAYSTACK_SECRET_KEY environment variable is required')
-}
-
 export async function POST(request: Request) {
   try {
     const body = await request.json()
