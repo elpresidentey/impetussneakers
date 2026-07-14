@@ -20,6 +20,12 @@ export async function POST(request: Request) {
     // Convert amount to kobo (Paystack uses smallest currency unit)
     const amountInKobo = Math.round(amount * 100)
 
+    // Get the correct callback URL from the request origin or environment variable
+    const origin = request.headers.get('origin') || request.headers.get('referer')?.split('/').slice(0, 3).join('/')
+    const callbackUrl = `${origin || process.env.NEXT_PUBLIC_APP_URL || 'https://impetus-omega.vercel.app'}/payment/verify`
+    
+    console.log('Payment callback URL:', callbackUrl)
+
     // Initialize transaction with Paystack
     const response = await fetch('https://api.paystack.co/transaction/initialize', {
       method: 'POST',
@@ -41,7 +47,7 @@ export async function POST(request: Request) {
           ],
           ...metadata,
         },
-        callback_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/payment/verify`,
+        callback_url: callbackUrl,
       }),
     })
 
