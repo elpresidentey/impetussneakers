@@ -117,16 +117,33 @@ function OrderSuccessContent() {
     <div className="min-h-screen bg-background py-12 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
-            <CheckCircle className="w-8 h-8 text-green-600" />
+          <div className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce">
+            <CheckCircle className="w-10 h-10 text-green-600" />
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">Order Confirmed!</h1>
-          <p className="text-muted-foreground text-lg">
-            Thank you for your purchase. Your order has been placed successfully.
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Order Complete! 🎉</h1>
+          <p className="text-muted-foreground text-lg mb-6">
+            Your kicks are on the way! Check your email for confirmation.
           </p>
-          {(order?.order_number || orderNumber) && (
-            <p className="text-sm text-muted-foreground mt-2">
-              Order Number: <span className="font-semibold">{order?.order_number || orderNumber}</span>
+          
+          {/* Prominent Purchase ID Display */}
+          <div className="max-w-md mx-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl p-6 shadow-xl mb-6">
+            <p className="text-sm uppercase tracking-wider opacity-90 mb-2">Your Purchase ID</p>
+            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 mb-2">
+              <p className="text-3xl md:text-4xl font-black tracking-wider">
+                {order?.order_number || orderNumber || 'Processing...'}
+              </p>
+            </div>
+            <p className="text-xs opacity-90">Save this for tracking and support</p>
+          </div>
+          
+          {order?.created_at && (
+            <p className="text-sm text-muted-foreground">
+              Ordered on {new Date(order.created_at).toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
             </p>
           )}
         </div>
@@ -309,24 +326,66 @@ function OrderSuccessContent() {
           </div>
         </div>
         <div className="text-center space-y-4">
-          <div className="bg-card border border-foreground/10 rounded-lg p-6">
-            <p className="text-muted-foreground mb-4">
-              A confirmation email has been sent to your email address with your receipt.
-            </p>
+          <div className="bg-card border border-foreground/10 rounded-lg p-8">
+            <h3 className="text-xl font-bold text-foreground mb-4">What's Next?</h3>
+            <div className="grid md:grid-cols-3 gap-6 mb-6 text-left">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
+                  <span className="text-2xl">📧</span>
+                </div>
+                <h4 className="font-semibold mb-2">Check Your Email</h4>
+                <p className="text-sm text-muted-foreground">
+                  Confirmation sent to {order?.customer_email || 'your email'}
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
+                  <span className="text-2xl">📦</span>
+                </div>
+                <h4 className="font-semibold mb-2">Track Your Order</h4>
+                <p className="text-sm text-muted-foreground">
+                  Use your Purchase ID to track shipping
+                </p>
+              </div>
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                  <span className="text-2xl">🚚</span>
+                </div>
+                <h4 className="font-semibold mb-2">Get Your Heat</h4>
+                <p className="text-sm text-muted-foreground">
+                  Delivery in 3-5 business days
+                </p>
+              </div>
+            </div>
+            
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/orders">
-                <Button size="lg" className="w-full sm:w-auto">
+                <Button size="lg" className="w-full sm:w-auto bg-foreground hover:bg-foreground/90">
                   <Package className="w-4 h-4 mr-2" />
-                  Track Your Order
+                  Track Order Status
                 </Button>
               </Link>
               <Link href="/">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                  Continue Shopping
+                  Shop More Heat
                 </Button>
               </Link>
             </div>
           </div>
+          
+          {/* Copy Purchase ID Button */}
+          <button
+            onClick={() => {
+              const purchaseId = order?.order_number || orderNumber
+              if (purchaseId) {
+                navigator.clipboard.writeText(purchaseId)
+                alert('Purchase ID copied to clipboard!')
+              }
+            }}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            📋 Copy Purchase ID to clipboard
+          </button>
         </div>
       </div>
     </div>
