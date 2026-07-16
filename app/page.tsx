@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { ArrowRight, Store } from 'lucide-react'
+import Link from 'next/link'
+import { ArrowRight, Store, Mail } from 'lucide-react'
 import { Header } from '@/components/header'
 import { ProductCard } from '@/components/product-card'
 import { QuickViewModal } from '@/components/quick-view-modal'
@@ -76,6 +77,7 @@ export default function Page() {
   const [sortBy, setSortBy] = useState('default')
   const [filterStock, setFilterStock] = useState('all')
   const [filterCategory, setFilterCategory] = useState('all')
+  const [bentoCardIndex, setBentoCardIndex] = useState([0, 0, 0])
   const { cartItems, cartTotal } = useCart()
   const { user } = useAuth()
 
@@ -188,22 +190,24 @@ export default function Page() {
   })
   
   const heroImages = [
-    {
-      src: '/hero-sneaker-ledge.jpg',
-      alt: 'Nike sneakers styled on a concrete ledge',
-      position: 'object-[42%_50%]',
-    },
-    {
-      src: '/hero-sneaker-studio.jpg',
-      alt: 'Black designer sneakers in a clean studio setting',
-      position: 'object-[38%_50%]',
-    },
-    {
-      src: '/hero-sneaker-monochrome.jpg',
-      alt: 'Monochrome streetwear portrait with classic sneakers',
-      position: 'object-[50%_42%]',
-    },
+    { src: '/hero-sneaker-ledge.jpg', alt: 'Sneakers styled on a concrete ledge', position: 'object-[42%_50%]' },
+    { src: '/hero-sneaker-studio.jpg', alt: 'Black designer sneakers in a clean studio', position: 'object-[38%_50%]' },
+    { src: '/hero-sneaker-monochrome.jpg', alt: 'Monochrome streetwear with classic sneakers', position: 'object-[50%_42%]' },
+    { src: '/artiom-vallat-CHKaD8uRaDU-unsplash.jpg', alt: 'Premium sneakers editorial', position: 'object-[50%_40%]' },
+    { src: '/everysize-dih2AY_9EAY-unsplash.jpg', alt: 'Sneakers in a modern setting', position: 'object-[45%_50%]' },
+    { src: '/yoga-sukma-ywtc7LchG2w-unsplash.jpg', alt: 'Streetwear collection editorial', position: 'object-[50%_45%]' },
+    { src: '/abhay-siby-mathew-cStSHUpdApc-unsplash.jpg', alt: 'Sneaker close-up editorial', position: 'object-[50%_48%]' },
+    { src: '/ayoub-aabass-rlNVq3feaNg-unsplash.jpg', alt: 'Urban sneaker photography', position: 'object-[48%_50%]' },
+    { src: '/hermes-rivera-OX_en7CXMj4-unsplash.jpg', alt: 'Street style sneaker shot', position: 'object-[52%_45%]' },
+    { src: '/fachry-zella-devandra-GSGBk80Fwlg-unsplash.jpg', alt: 'Sneaker lifestyle editorial', position: 'object-[46%_50%]' },
+    { src: '/niklas-bahe-tA0vOQEIw0Q-unsplash.jpg', alt: 'Classic sneaker portrait', position: 'object-[50%_50%]' },
+    { src: '/flow-clark-AAkK5o8mZMg-unsplash.jpg', alt: 'Sneaker detail photography', position: 'object-[50%_42%]' },
+    { src: '/kc-shum-YJUsc9aZg9s-unsplash.jpg', alt: 'Minimal sneaker composition', position: 'object-[44%_50%]' },
   ]
+
+  const bentoCard1Images = heroImages.slice(0, 4)
+  const bentoCard2Images = heroImages.slice(4, 8)
+  const bentoCard3Images = heroImages.slice(8, 13)
 
   useEffect(() => {
     setIsLoaded(true)
@@ -852,6 +856,21 @@ export default function Page() {
     }
   }, [isSearchOpen])
 
+  useEffect(() => {
+    const pools = [bentoCard1Images, bentoCard2Images, bentoCard3Images]
+    const durations = [6000, 7500, 9000]
+    const intervals = durations.map((dur, cardIdx) =>
+      setInterval(() => {
+        setBentoCardIndex((prev) => {
+          const next = [...prev]
+          next[cardIdx] = (next[cardIdx] + 1) % pools[cardIdx].length
+          return next
+        })
+      }, dur)
+    )
+    return () => intervals.forEach(clearInterval)
+  }, [])
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -881,7 +900,7 @@ export default function Page() {
 
   return (
     <PageTransition>
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen page-shell text-foreground">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -889,68 +908,83 @@ export default function Page() {
         <Header onSearchOpen={() => setIsSearchOpen(true)} onCartOpen={() => setIsCartOpen(true)} onAuthOpen={() => setIsAuthOpen(true)} />
 
       {/* Hero Section */}
-      <section className="relative min-h-[92vh] overflow-hidden bg-black text-white md:min-h-[95vh]">
+      <section className="relative min-h-[92vh] overflow-hidden bg-black text-white noise-overlay md:min-h-[96vh]">
         {heroImages.map((image, index) => (
           <Image
             key={image.src}
             src={image.src}
             alt={image.alt}
             fill
-            className={`object-cover ${image.position} transition-all duration-[1400ms] ease-out ${
-              index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+            className={`object-cover ${image.position} transition-all duration-[1600ms] ease-out ${
+              index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.04]'
             }`}
             priority={index === 0}
             loading={index === 0 ? 'eager' : 'lazy'}
           />
         ))}
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/60" />
+        <div className="absolute inset-0 bg-black/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-black/20" />
+        <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/50 to-transparent" />
 
-        <div className="relative z-10 flex min-h-[92vh] items-center px-4 pb-8 pt-24 text-center md:min-h-[95vh] md:px-8 md:pt-28">
+        <div className="relative z-10 flex min-h-[92vh] items-end px-4 pb-16 pt-28 md:min-h-[96vh] md:items-center md:px-8 md:pb-20 md:pt-32">
           <div className="w-full">
-            <div className={`max-w-7xl mx-auto transition-all duration-1000 ease-out ${
-              isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+            <div className={`mx-auto max-w-7xl transition-all duration-1000 ease-out ${
+              isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
             }`}>
-              <div className="mx-auto max-w-4xl">
-                <p className="mb-5 text-xs font-semibold uppercase tracking-[0.4em] text-white/80">
-                  Where Heat Lives
-                </p>
-                <h1 className="text-5xl font-black uppercase leading-[0.85] tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl">
-                  Stay Laced
-                </h1>
-                <p className="mx-auto mt-7 max-w-xl text-center text-base leading-relaxed text-white/85 md:text-lg">
-                  Real heat, real prices. From grails to daily rotation - we got your feet covered.
-                </p>
-                <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
-                  <button onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} className="group inline-flex min-h-12 items-center justify-center gap-2 bg-white px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-all duration-300 hover:bg-white/90 active:scale-[0.98]">
-                    <span>Cop Your Heat</span>
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </button>
-                  <button onClick={() => document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth' })} className="inline-flex min-h-12 items-center justify-center border border-white/60 px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-all duration-300 hover:bg-white hover:text-black active:scale-[0.98]">
-                    Browse Drops
-                  </button>
+              <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-end">
+                <div className="max-w-3xl text-left">
+                  <div className="mb-6 inline-flex items-center gap-3 border border-white/20 bg-white/5 px-3 py-1.5 backdrop-blur-sm">
+                    <span className="h-1.5 w-1.5 animate-pulse bg-white" />
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-white/80">
+                      Where Heat Lives
+                    </p>
+                  </div>
+                  <h1 className="text-5xl font-black uppercase leading-[0.84] tracking-tighter text-white sm:text-6xl md:text-7xl lg:text-8xl">
+                    Stay Laced
+                  </h1>
+                  <p className="mt-7 max-w-lg text-base leading-relaxed text-white/80 md:text-lg">
+                    Real heat, real prices. From grails to daily rotation — curated pairs for people who move different.
+                  </p>
+                  <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <button onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} className="group inline-flex min-h-12 items-center justify-center gap-2 bg-white px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-all duration-300 hover:bg-white/90 active:scale-[0.98]">
+                      <span>Cop Your Heat</span>
+                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    </button>
+                    <button onClick={() => document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth' })} className="inline-flex min-h-12 items-center justify-center border border-white/45 bg-white/5 px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-black active:scale-[0.98]">
+                      Browse Drops
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              <div className="mx-auto mt-8 flex max-w-3xl flex-col items-center gap-4 border-t border-white/25 pt-5">
-                <div className="grid grid-cols-3 gap-4 text-center text-xs uppercase tracking-[0.18em] text-white/70">
-                  <span>Fresh drops daily</span>
-                  <span>100% authentic</span>
-                  <span>Fast shipping</span>
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  {heroImages.map((_, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      aria-label={`Show hero image ${index + 1}`}
-                      onClick={() => setCurrentImageIndex(index)}
-                      className={`h-1.5 transition-all duration-300 ${
-                        index === currentImageIndex ? 'w-10 bg-white' : 'w-4 bg-white/45 hover:bg-white/70'
-                      }`}
-                    />
-                  ))}
+                <div className="flex flex-col gap-6 border-t border-white/15 pt-6 md:border-t-0 md:border-l md:pl-10 md:pt-0">
+                  <div className="grid grid-cols-1 gap-4 text-[11px] uppercase tracking-[0.2em] text-white/65 sm:grid-cols-3 md:grid-cols-1">
+                    <div className="flex items-center gap-3">
+                      <span className="h-px w-6 bg-white/35" />
+                      <span>Fresh drops daily</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="h-px w-6 bg-white/35" />
+                      <span>100% authentic</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="h-px w-6 bg-white/35" />
+                      <span>Fast shipping</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {heroImages.map((_, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        aria-label={`Show hero image ${index + 1}`}
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`h-1 transition-all duration-300 ${
+                          index === currentImageIndex ? 'w-12 bg-white' : 'w-5 bg-white/40 hover:bg-white/70'
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -959,63 +993,107 @@ export default function Page() {
       </section>
 
       {/* Collections */}
-      <section id="collections" className="px-4 md:px-8 py-16 md:py-24 bg-[#f4f1eb]">
+      <section id="collections" className="section-pad surface-warm border-b border-foreground/[0.06]">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="mb-10 grid gap-6 md:mb-14 md:grid-cols-[1fr_0.8fr] md:items-end">
+          <div className="mb-10 grid gap-6 md:mb-14 md:grid-cols-[1.2fr_0.8fr] md:items-end">
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/55">Collections</p>
-              <h2 className="max-w-3xl text-4xl font-black uppercase leading-[0.9] tracking-normal text-foreground md:text-6xl lg:text-7xl">
+              <p className="section-eyebrow">Collections</p>
+              <h2 className="section-title max-w-3xl">
                 Built for the culture.
               </h2>
             </div>
+            <p className="section-lede md:justify-self-end md:text-right">
+              Editorial edits and weekly restocks — pick a lane and find your next pair.
+            </p>
           </div>
 
           <ScrollReveal direction="up" delay={100}>
-            <div className="grid gap-4 md:grid-cols-12 md:auto-rows-[230px]">
-              <button className="group relative min-h-[420px] overflow-hidden text-left md:col-span-7 md:row-span-2" onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}>
+            <div className="grid gap-4 md:grid-cols-12 md:auto-rows-[220px]">
+              {/* Card 1 — Hero / Statement (7 cols × 2 rows) */}
+              <button className="group relative min-h-[420px] overflow-hidden text-left md:col-span-7 md:row-span-2 opacity-0 animate-[fadeIn_0.6s_ease-out_0.1s_forwards]" onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}>
                 <Image
-                  src="/hero-sneaker-ledge.jpg"
-                  alt="Statement sneakers and streetwear"
+                  src={bentoCard1Images[bentoCardIndex[0] % bentoCard1Images.length].src}
+                  alt={bentoCard1Images[bentoCardIndex[0] % bentoCard1Images.length].alt}
                   fill
-                  className="object-cover object-[43%_52%] transition-transform duration-700 group-hover:scale-105"
+                  className={`object-cover ${bentoCard1Images[bentoCardIndex[0] % bentoCard1Images.length].position} transition-opacity duration-700 group-hover:scale-[1.06]`}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-opacity duration-500 group-hover:via-black/50" />
                 <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-8">
-                  <p className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-white/70">01 / Statement</p>
-                  <h3 className="max-w-lg text-4xl font-black uppercase leading-none md:text-6xl">Heat for your feet.</h3>
-                  <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/85">
+                  <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/60">01 / Statement</p>
+                  <h3 className="max-w-lg text-4xl font-black uppercase leading-[0.9] md:text-6xl">Heat for your feet.</h3>
+                  <span className="mt-5 inline-flex items-center gap-2 border-b border-white/40 pb-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-white/80 transition-all duration-300 group-hover:border-white group-hover:text-white">
                     Explore edit
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                   </span>
                 </div>
               </button>
 
-              <button className="group relative min-h-[250px] overflow-hidden text-left md:col-span-5" onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}>
+              {/* Card 2 — Studio (5 cols × 1 row) */}
+              <button className="group relative min-h-[250px] overflow-hidden text-left md:col-span-5 opacity-0 animate-[fadeIn_0.6s_ease-out_0.25s_forwards]" onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}>
                 <Image
-                  src="/hero-sneaker-studio.jpg"
-                  alt="Studio sneakers"
+                  src={bentoCard2Images[bentoCardIndex[1] % bentoCard2Images.length].src}
+                  alt={bentoCard2Images[bentoCardIndex[1] % bentoCard2Images.length].alt}
                   fill
-                  className="object-cover object-[36%_50%] transition-transform duration-700 group-hover:scale-105"
+                  className={`object-cover ${bentoCard2Images[bentoCardIndex[1] % bentoCard2Images.length].position} transition-opacity duration-700 group-hover:scale-[1.06]`}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-6 text-white">
-                  <p className="mb-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/70">02 / Studio</p>
-                  <h3 className="text-3xl font-black uppercase leading-none md:text-4xl">Understated fire.</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent transition-opacity duration-500 group-hover:via-black/45" />
+                <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-7">
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/60">02 / Studio</p>
+                  <h3 className="text-3xl font-black uppercase leading-[0.9] md:text-4xl">Understated fire.</h3>
+                  <span className="mt-3 inline-flex items-center gap-2 border-b border-white/40 pb-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-white/80 transition-all duration-300 group-hover:border-white group-hover:text-white">
+                    Shop now
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
                 </div>
               </button>
 
-              <button className="group relative min-h-[250px] overflow-hidden bg-black p-6 text-left text-white md:col-span-5" onClick={() => setFilterCategory('new-arrivals')}>
-                <div className="flex h-full flex-col justify-between">
-                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-white/55">03 / Drop room</p>
+              {/* Card 3 — Trending (5 cols × 1 row, sits below Studio) */}
+              <button className="group relative min-h-[250px] overflow-hidden text-left md:col-span-5 opacity-0 animate-[fadeIn_0.6s_ease-out_0.4s_forwards]" onClick={() => document.getElementById('hottest')?.scrollIntoView({ behavior: 'smooth' })}>
+                <Image
+                  src={bentoCard3Images[bentoCardIndex[2] % bentoCard3Images.length].src}
+                  alt={bentoCard3Images[bentoCardIndex[2] % bentoCard3Images.length].alt}
+                  fill
+                  className={`object-cover ${bentoCard3Images[bentoCardIndex[2] % bentoCard3Images.length].position} transition-opacity duration-700 group-hover:scale-[1.06]`}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent transition-opacity duration-500 group-hover:via-black/35" />
+                <div className="absolute inset-x-0 bottom-0 p-6 text-white md:p-7">
+                  <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/60">03 / Trending</p>
+                  <h3 className="text-3xl font-black uppercase leading-[0.9] md:text-4xl">What the culture is rotating.</h3>
+                  <span className="mt-3 inline-flex items-center gap-2 border-b border-white/40 pb-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-white/80 transition-all duration-300 group-hover:border-white group-hover:text-white">
+                    View hottest
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                  </span>
+                </div>
+              </button>
+
+              {/* Card 4 — Drop Room (12 cols × 1 row, full width) */}
+              <button className="group relative min-h-[250px] overflow-hidden bg-[#1a1714] p-6 text-left text-white md:col-span-12 opacity-0 animate-[fadeIn_0.6s_ease-out_0.55s_forwards]" onClick={() => setFilterCategory('new-arrivals')}>
+                {/* Animated floating number watermark */}
+                <div className="absolute -right-8 -top-8 text-[200px] font-black leading-none text-white/[0.03] animate-floatNumber transition-transform duration-700 group-hover:scale-110 group-hover:text-white/[0.06]">
+                  {uniqueProducts.length || 24}
+                </div>
+                {/* Decorative animated dots */}
+                <div className="absolute right-20 top-8 h-2 w-2 bg-white/[0.06] animate-driftDots" style={{ animationDelay: '0s' }} />
+                <div className="absolute right-40 top-14 h-1.5 w-1.5 bg-white/[0.04] animate-driftDots" style={{ animationDelay: '2s' }} />
+                <div className="absolute bottom-12 right-16 h-1 w-1 bg-white/[0.05] animate-driftDots" style={{ animationDelay: '4s' }} />
+                {/* Subtle ring accent */}
+                <div className="absolute -left-12 -top-12 h-48 w-48 rounded-full border border-white/[0.05] animate-pulseRing" />
+                <div className="absolute -right-6 -bottom-6 h-32 w-32 rounded-full border border-white/[0.04] animate-pulseRing" style={{ animationDelay: '1.5s' }} />
+
+                <div className="relative flex h-full flex-col justify-between sm:flex-row sm:items-end sm:gap-8">
                   <div>
-                    <p className="text-6xl font-black leading-none md:text-7xl">{uniqueProducts.length || 24}</p>
-                    <h3 className="mt-3 max-w-sm text-2xl font-black uppercase leading-none md:text-4xl">Heat restocking weekly.</h3>
-                    <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/75">
-                      See arrivals
-                      <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                    </span>
+                    <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/45">04 / Drop room</p>
+                    <div className="flex items-baseline gap-3">
+                      <p className="text-6xl font-black leading-none transition-all duration-500 group-hover:tracking-tight md:text-7xl">{uniqueProducts.length || 24}</p>
+                      <span className="text-sm font-semibold uppercase tracking-wide text-white/50 transition-colors duration-300 group-hover:text-white/70">pairs</span>
+                    </div>
+                    <h3 className="mt-2 max-w-sm text-2xl font-black uppercase leading-[0.9] transition-colors duration-300 group-hover:text-white md:text-3xl">Heat restocking weekly.</h3>
                   </div>
+                  <span className="mt-5 inline-flex items-center gap-2 border-b border-white/30 pb-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-white/70 transition-all duration-300 group-hover:border-white/60 group-hover:text-white sm:mt-0 sm:shrink-0">
+                    See arrivals
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1.5" />
+                  </span>
                 </div>
               </button>
             </div>
@@ -1024,14 +1102,17 @@ export default function Page() {
       </section>
 
       {/* New Arrivals Section */}
-      <section id="new-arrivals" className="px-4 md:px-8 py-16 md:py-24 bg-white">
+      <section id="new-arrivals" className="section-pad surface-paper">
         <div className="max-w-7xl mx-auto">
           <ScrollReveal direction="up" delay={100}>
-            <div className="mb-10">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/55">Collection</p>
-              <h2 className="text-4xl font-black uppercase leading-[0.9] tracking-normal text-foreground md:text-6xl">
-                New Arrivals
-              </h2>
+            <div className="mb-10 flex flex-col gap-3 border-b border-foreground/[0.08] pb-6 md:mb-12 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="section-eyebrow">Collection</p>
+                <h2 className="section-title text-4xl md:text-6xl">
+                  New Arrivals
+                </h2>
+              </div>
+              <p className="section-lede">Just landed. Limited stock.</p>
             </div>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
@@ -1049,14 +1130,17 @@ export default function Page() {
       </section>
 
       {/* Hottest Products Section */}
-      <section id="hottest" className="px-4 md:px-8 py-16 md:py-24 bg-[#fbfaf7]">
+      <section id="hottest" className="section-pad surface-warm">
         <div className="max-w-7xl mx-auto">
           <ScrollReveal direction="up" delay={100}>
-            <div className="mb-10">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/55">Trending</p>
-              <h2 className="text-4xl font-black uppercase leading-[0.9] tracking-normal text-foreground md:text-6xl">
-                Hottest Products
-              </h2>
+            <div className="mb-10 flex flex-col gap-3 border-b border-foreground/[0.08] pb-6 md:mb-12 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="section-eyebrow">Trending</p>
+                <h2 className="section-title text-4xl md:text-6xl">
+                  Hottest Products
+                </h2>
+              </div>
+              <p className="section-lede">What the culture is rotating right now.</p>
             </div>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
@@ -1074,14 +1158,17 @@ export default function Page() {
       </section>
 
       {/* Featured Section */}
-      <section id="featured" className="px-4 md:px-8 py-16 md:py-24 bg-white">
+      <section id="featured" className="section-pad surface-paper">
         <div className="max-w-7xl mx-auto">
           <ScrollReveal direction="up" delay={100}>
-            <div className="mb-10">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/55">Curated</p>
-              <h2 className="text-4xl font-black uppercase leading-[0.9] tracking-normal text-foreground md:text-6xl">
-                Featured
-              </h2>
+            <div className="mb-10 flex flex-col gap-3 border-b border-foreground/[0.08] pb-6 md:mb-12 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="section-eyebrow">Curated</p>
+                <h2 className="section-title text-4xl md:text-6xl">
+                  Featured
+                </h2>
+              </div>
+              <p className="section-lede">Hand-picked silhouettes worth the cop.</p>
             </div>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
@@ -1099,14 +1186,17 @@ export default function Page() {
       </section>
 
       {/* Sale Section */}
-      <section id="sale" className="px-4 md:px-8 py-16 md:py-24 bg-[#fbfaf7]">
+      <section id="sale" className="section-pad surface-paper">
         <div className="max-w-7xl mx-auto">
           <ScrollReveal direction="up" delay={100}>
-            <div className="mb-10">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-red-600">Special Offer</p>
-              <h2 className="text-4xl font-black uppercase leading-[0.9] tracking-normal text-red-600 md:text-6xl">
-                Sale
-              </h2>
+            <div className="mb-10 flex flex-col gap-3 border-b border-foreground/[0.08] pb-6 md:mb-12 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p className="section-eyebrow">Special Offer</p>
+                <h2 className="section-title text-4xl md:text-6xl">
+                  Sale
+                </h2>
+              </div>
+              <p className="section-lede">Marked-down heat — while stock lasts.</p>
             </div>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
@@ -1124,36 +1214,36 @@ export default function Page() {
       </section>
 
       {/* Vendor Partner Banner */}
-      <section className="relative isolate overflow-hidden bg-black px-4 py-16 text-white md:px-8 md:py-24">
+      <section className="relative isolate overflow-hidden bg-black px-4 py-16 text-white noise-overlay md:px-8 md:py-24">
         <Image
-          src="/hero-sneaker-monochrome.jpg"
+          src="/flow-clark-AAkK5o8mZMg-unsplash.jpg"
           alt="Streetwear styling and classic sneakers"
           fill
-          className="-z-20 object-cover object-center opacity-55"
+          className="-z-20 object-cover object-center opacity-35"
         />
-        <div className="absolute inset-0 -z-10 bg-black/55" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/90 via-black/75 to-black/55" />
         <div className="relative mx-auto max-w-7xl">
           <ScrollReveal direction="up" delay={100}>
             <div className="grid items-end gap-12 md:grid-cols-[1.15fr_0.85fr]">
               <div className="max-w-2xl">
-                <div className="mb-6 inline-flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em] text-white/70">
+                <div className="mb-6 inline-flex items-center gap-3 border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/75 backdrop-blur-sm">
                   <Store className="h-4 w-4" />
                   <span>Sell with Impetus</span>
                 </div>
                 <h2 className="text-5xl font-black uppercase leading-[0.86] md:text-7xl">
                   Put your best pairs in front of the right people.
                 </h2>
-                <p className="mt-6 max-w-xl text-base text-white/80 md:text-lg">
+                <p className="mt-6 max-w-xl text-base text-white/75 md:text-lg">
                   Apply to sell verified sneakers and streetwear with a storefront built for discovery.
                 </p>
-                <div className="mb-8 mt-8 grid grid-cols-2 gap-4">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                    <div className="text-2xl font-bold mb-1">₦2.5M</div>
-                    <div className="text-sm opacity-80">Avg monthly revenue</div>
+                <div className="mb-8 mt-8 grid grid-cols-2 gap-3">
+                  <div className="border border-white/15 bg-white/8 p-4 backdrop-blur-sm">
+                    <div className="mb-1 text-2xl font-black">₦2.5M</div>
+                    <div className="text-xs uppercase tracking-[0.14em] text-white/65">Avg monthly revenue</div>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                    <div className="text-2xl font-bold mb-1">10K+</div>
-                    <div className="text-sm opacity-80">Ready customers</div>
+                  <div className="border border-white/15 bg-white/8 p-4 backdrop-blur-sm">
+                    <div className="mb-1 text-2xl font-black">10K+</div>
+                    <div className="text-xs uppercase tracking-[0.14em] text-white/65">Ready customers</div>
                   </div>
                 </div>
                 <div className="flex flex-col gap-4 sm:flex-row">
@@ -1168,52 +1258,51 @@ export default function Page() {
               </div>
               
               <div className="relative">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                  <h3 className="text-2xl font-bold mb-6">Why Choose Us?</h3>
-                  <div className="space-y-4">
+                <div className="border border-white/15 bg-white/8 p-7 backdrop-blur-md md:p-8">
+                  <h3 className="mb-6 text-xl font-black uppercase tracking-wide">Why Choose Us?</h3>
+                  <div className="space-y-5">
                     <div className="flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-bold text-green-900">✓</span>
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-emerald-300/40 bg-emerald-400/90">
+                        <span className="text-sm font-bold text-emerald-950">✓</span>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-1">Lowest Commission</h4>
-                        <p className="text-sm opacity-80">Only 8% vs 15-20% on other platforms</p>
+                        <h4 className="mb-1 text-sm font-semibold uppercase tracking-wide">Lowest Commission</h4>
+                        <p className="text-sm text-white/70">Only 8% vs 15-20% on other platforms</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-bold text-green-900">✓</span>
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-emerald-300/40 bg-emerald-400/90">
+                        <span className="text-sm font-bold text-emerald-950">✓</span>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-1">Built-in Audience</h4>
-                        <p className="text-sm opacity-80">Access to 10,000+ sneaker enthusiasts</p>
+                        <h4 className="mb-1 text-sm font-semibold uppercase tracking-wide">Built-in Audience</h4>
+                        <p className="text-sm text-white/70">Access to 10,000+ sneaker enthusiasts</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-full bg-green-400 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-bold text-green-900">✓</span>
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-emerald-300/40 bg-emerald-400/90">
+                        <span className="text-sm font-bold text-emerald-950">✓</span>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-1">Fast Payments</h4>
-                        <p className="text-sm opacity-80">Guaranteed payments within 24 hours</p>
+                        <h4 className="mb-1 text-sm font-semibold uppercase tracking-wide">Fast Payments</h4>
+                        <p className="text-sm text-white/70">Guaranteed payments within 24 hours</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-bold text-yellow-900">🚀</span>
+                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-amber-300/50 bg-amber-400">
+                        <span className="text-sm font-bold text-amber-950">★</span>
                       </div>
                       <div>
-                        <h4 className="font-semibold mb-1">Limited Time: 5% Commission</h4>
-                        <p className="text-sm opacity-80">First 50 vendors get reduced rate for 6 months</p>
+                        <h4 className="mb-1 text-sm font-semibold uppercase tracking-wide">Limited: 5% Commission</h4>
+                        <p className="text-sm text-white/70">First 50 vendors get reduced rate for 6 months</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                {/* Floating Stats */}
-                <div className="absolute -top-4 -right-4 bg-yellow-400 text-black p-4 rounded-xl font-bold text-center shadow-xl">
-                  <div className="text-lg">50/50</div>
-                  <div className="text-xs">Spots Left</div>
+                <div className="absolute -right-3 -top-3 border border-black/10 bg-amber-400 px-4 py-3 text-center font-black text-black shadow-xl md:-right-4 md:-top-4">
+                  <div className="text-lg leading-none">50/50</div>
+                  <div className="mt-1 text-[10px] uppercase tracking-[0.16em]">Spots Left</div>
                 </div>
               </div>
             </div>
@@ -1222,39 +1311,34 @@ export default function Page() {
       </section>
 
       {/* Latest Drops - Product Grid */}
-      <section id="shop" className="px-4 md:px-8 py-20 md:py-28 bg-[#fbfaf7]">
+      <section id="shop" className="section-pad-lg surface-warm border-t border-foreground/[0.06]">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <ScrollReveal direction="up" delay={100}>
-            <div className="mb-12 grid gap-6 md:mb-16 md:grid-cols-[1fr_auto] md:items-end">
+            <div className="mb-12 grid gap-6 border-b border-foreground/[0.08] pb-8 md:mb-14 md:grid-cols-[1fr_auto] md:items-end">
               <div>
-                <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-foreground/50">Shop</p>
-                <h2 className="text-4xl font-black uppercase leading-[0.88] tracking-normal text-foreground md:text-6xl lg:text-7xl">
+                <p className="section-eyebrow">Shop</p>
+                <h2 className="section-title">
                   Fresh drops.
                 </h2>
+                <p className="section-lede mt-4">
+                  Limited releases. Premium quality. First access to the pairs that define culture.
+                </p>
               </div>
-              <p className="text-sm uppercase tracking-[0.2em] text-foreground/45">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground/40">
                 {filteredProducts.length} products
               </p>
-              <div className="hidden">
-                <h2>
-                  Fresh Drops
-              </h2>
-              <p className="text-base md:text-lg text-foreground/60 font-normal max-w-2xl">
-                Limited releases. Premium quality. First access to the pairs that define culture.
-              </p>
-              </div>
             </div>
           </ScrollReveal>
 
           {/* Filter and Sort Bar */}
           <ScrollReveal direction="up" delay={100}>
-            <div className="mb-12 grid gap-4 border-y border-foreground/12 py-5 md:grid-cols-[1fr_auto] md:items-center">
-              <div className="grid gap-4 sm:grid-cols-3">
+            <div className="mb-12 grid gap-4 border border-foreground/[0.08] bg-white/50 p-4 backdrop-blur-sm md:grid-cols-[1fr_auto] md:items-center md:p-5">
+              <div className="grid gap-3 sm:grid-cols-3">
                 <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  className="h-12 border border-foreground/15 bg-transparent px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-foreground hover:border-foreground/30 cursor-pointer"
+                  className="h-12 border border-foreground/12 bg-white/80 px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-foreground hover:border-foreground/30 cursor-pointer"
                 >
                   <option value="all">All Categories</option>
                   <option value="new-arrivals">New Arrivals</option>
@@ -1265,7 +1349,7 @@ export default function Page() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="h-12 border border-foreground/15 bg-transparent px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-foreground hover:border-foreground/30 cursor-pointer"
+                  className="h-12 border border-foreground/12 bg-white/80 px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-foreground hover:border-foreground/30 cursor-pointer"
                 >
                   <option value="default">Sort by</option>
                   <option value="price-low">Price: Low to High</option>
@@ -1277,7 +1361,7 @@ export default function Page() {
                 <select
                   value={filterStock}
                   onChange={(e) => setFilterStock(e.target.value)}
-                  className="h-12 border border-foreground/15 bg-transparent px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-foreground hover:border-foreground/30 cursor-pointer"
+                  className="h-12 border border-foreground/12 bg-white/80 px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-foreground hover:border-foreground/30 cursor-pointer"
                 >
                   <option value="all">All Products</option>
                   <option value="in-stock">In Stock</option>
@@ -1310,19 +1394,16 @@ export default function Page() {
       </section>
 
       {/* Flagship Experience */}
-      <section id="newsletter" className="px-4 md:px-8 py-16 md:py-20 bg-white border-t border-foreground/10">
+      <section id="experience" className="section-pad surface-paper border-t border-foreground/[0.06]">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <ScrollReveal direction="up" delay={100}>
             <div className="mb-12 md:mb-16">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-foreground/5 border border-foreground/10 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-foreground animate-pulse" />
-                <span className="text-xs font-semibold text-foreground uppercase tracking-widest">Experience</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-foreground mb-4 text-balance">
+              <p className="section-eyebrow">Experience</p>
+              <h2 className="section-title mb-4 max-w-3xl">
                 Beyond the Store
               </h2>
-              <p className="text-base md:text-lg text-foreground/60 font-normal max-w-2xl">
+              <p className="section-lede">
                 A digital flagship where every pixel serves the story. Where culture meets commerce.
               </p>
             </div>
@@ -1330,18 +1411,19 @@ export default function Page() {
 
           {/* Gallery Image */}
           <ScrollReveal direction="up" delay={100}>
-            <div className="relative rounded-3xl overflow-hidden aspect-video md:aspect-[16/9] border border-foreground/10 group cursor-pointer shadow-2xl shadow-foreground/5">
+            <div className="group relative aspect-video cursor-pointer overflow-hidden border border-foreground/10 shadow-[0_24px_80px_rgba(20,16,12,0.12)] md:aspect-[16/9]">
               <Image
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/diego-jaramillo-W4swGaKFHVQ-unsplash-eweOcZZ12tk00zydKVwmN14tnD2Nae.jpg"
                 alt="Showroom Experience"
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/30 to-transparent flex flex-col justify-end p-8 md:p-12">
-                <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-background mb-3 text-balance">
+              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/85 via-black/25 to-transparent p-8 md:p-12">
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60">Flagship</p>
+                <h3 className="mb-3 max-w-xl text-2xl font-black uppercase leading-none tracking-tight text-white md:text-4xl">
                   Crafted for Collectors
                 </h3>
-                <p className="text-background/90 font-normal max-w-xl text-sm md:text-base">
+                <p className="max-w-xl text-sm text-white/80 md:text-base">
                   Every detail intentional. Every drop meaningful. This is sneaker retail elevated.
                 </p>
               </div>
@@ -1351,47 +1433,37 @@ export default function Page() {
       </section>
 
       {/* Brand Proof Section with Marquee */}
-      <section className="px-4 md:px-8 py-12 md:py-16 bg-gradient-to-b from-background via-foreground/[0.02] to-background border-t border-foreground/10 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12 md:mb-16">
-            <p className="text-xs font-semibold text-foreground uppercase tracking-widest mb-3">Trusted By</p>
-            <h3 className="text-2xl md:text-3xl font-bold text-foreground">Sneaker Enthusiasts Worldwide</h3>
+      <section className="overflow-hidden border-y border-foreground/[0.08] surface-paper px-4 py-12 md:px-8 md:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-10 text-center md:mb-12">
+            <p className="section-eyebrow !mb-2">Trusted By</p>
+            <h3 className="text-2xl font-black uppercase tracking-tight text-foreground md:text-3xl">
+              Sneaker Enthusiasts Worldwide
+            </h3>
           </div>
           
-          {/* Marquee */}
-          <div className="relative overflow-hidden mb-12">
+          <div className="relative mb-4 overflow-hidden">
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[var(--surface-paper)] to-transparent md:w-24" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[var(--surface-paper)] to-transparent md:w-24" />
             <div className="flex animate-marquee">
               {[...Array(2)].map((_, i) => (
-                <div key={i} className="flex gap-16 md:gap-24 items-center px-8">
-                  <div className="flex flex-col items-center justify-center text-center">
-                    <p className="text-3xl md:text-4xl font-bold text-foreground mb-2">50K+</p>
-                    <p className="text-sm text-foreground/60">Happy Customers</p>
-                  </div>
-                  <div className="w-px h-12 bg-foreground/20" />
-                  <div className="flex flex-col items-center justify-center text-center">
-                    <p className="text-3xl md:text-4xl font-bold text-foreground mb-2">200+</p>
-                    <p className="text-sm text-foreground/60">Exclusive Drops</p>
-                  </div>
-                  <div className="w-px h-12 bg-foreground/20" />
-                  <div className="flex flex-col items-center justify-center text-center">
-                    <p className="text-3xl md:text-4xl font-bold text-foreground mb-2">4.9</p>
-                    <p className="text-sm text-foreground/60">Average Rating</p>
-                  </div>
-                  <div className="w-px h-12 bg-foreground/20" />
-                  <div className="flex flex-col items-center justify-center text-center">
-                    <p className="text-3xl md:text-4xl font-bold text-foreground mb-2">24/7</p>
-                    <p className="text-sm text-foreground/60">Support Available</p>
-                  </div>
-                  <div className="w-px h-12 bg-foreground/20" />
-                  <div className="flex flex-col items-center justify-center text-center">
-                    <p className="text-3xl md:text-4xl font-bold text-foreground mb-2">100%</p>
-                    <p className="text-sm text-foreground/60">Authentic</p>
-                  </div>
-                  <div className="w-px h-12 bg-foreground/20" />
-                  <div className="flex flex-col items-center justify-center text-center">
-                    <p className="text-3xl md:text-4xl font-bold text-foreground mb-2">50+</p>
-                    <p className="text-sm text-foreground/60">Countries</p>
-                  </div>
+                <div key={i} className="flex items-center gap-12 px-8 md:gap-20">
+                  {[
+                    ['50K+', 'Happy Customers'],
+                    ['200+', 'Exclusive Drops'],
+                    ['4.9', 'Average Rating'],
+                    ['24/7', 'Support Available'],
+                    ['100%', 'Authentic'],
+                    ['50+', 'Countries'],
+                  ].map(([stat, label]) => (
+                    <div key={`${i}-${label}`} className="flex items-center gap-12 md:gap-20">
+                      <div className="flex min-w-[7rem] flex-col items-center text-center">
+                        <p className="mb-1 text-3xl font-black tracking-tight text-foreground md:text-4xl">{stat}</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/45">{label}</p>
+                      </div>
+                      <div className="h-10 w-px bg-foreground/12" />
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
@@ -1400,25 +1472,25 @@ export default function Page() {
       </section>
 
       {/* CTA Section */}
-      <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-background via-foreground/5 to-background border-y border-foreground/10 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-foreground/5 via-transparent to-foreground/5" />
+      <section className="relative overflow-hidden surface-ink px-4 py-16 text-white md:px-8 md:py-20">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.08),transparent_45%)]" />
         <ScrollReveal direction="up" delay={100}>
-          <div className="max-w-4xl mx-auto text-center space-y-8 relative z-10">
-            <div className="space-y-4 md:space-y-6">
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-foreground text-balance">
+          <div className="relative z-10 mx-auto max-w-4xl space-y-8 text-center">
+            <div className="space-y-4 md:space-y-5">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-white/50">Ready?</p>
+              <h2 className="text-4xl font-black uppercase tracking-tight text-white md:text-5xl lg:text-6xl">
                 Find Your Grail
               </h2>
-              <p className="text-base md:text-lg text-foreground/60 font-normal max-w-2xl mx-auto">
+              <p className="mx-auto max-w-2xl text-base text-white/65 md:text-lg">
                 Join the movement. Limited drops. Premium quality. Your next pair is waiting.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <button onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} className="group w-full sm:w-auto px-10 py-4 bg-foreground text-background rounded-none font-semibold hover:bg-foreground/90 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-foreground/25 relative overflow-hidden">
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-background/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+            <div className="flex flex-col justify-center gap-3 pt-2 sm:flex-row">
+              <button onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} className="group relative w-full overflow-hidden bg-white px-10 py-4 font-semibold uppercase tracking-[0.12em] text-black transition-all duration-300 hover:bg-white/90 sm:w-auto">
                 <span className="relative z-10">Start Shopping</span>
               </button>
-              <button onClick={() => alert('Our Story section coming soon!')} className="w-full sm:w-auto px-10 py-4 border-2 border-foreground/20 rounded-none font-semibold hover:border-foreground/50 hover:bg-foreground/5 transition-all duration-300 hover:scale-105">
+              <button onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })} className="w-full border border-white/30 px-10 py-4 font-semibold uppercase tracking-[0.12em] text-white transition-all duration-300 hover:bg-white/10 sm:w-auto">
                 Our Story
               </button>
             </div>
@@ -1427,57 +1499,54 @@ export default function Page() {
       </section>
 
       {/* Features Section */}
-      <section className="px-4 md:px-8 py-16 md:py-20 bg-white border-t border-foreground/10">
+      <section className="section-pad surface-warm border-t border-foreground/[0.06]">
         <div className="max-w-7xl mx-auto">
           <ScrollReveal direction="up" delay={100}>
-            <div className="text-center mb-16 md:mb-20">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-foreground/5 border border-foreground/10 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-foreground animate-pulse" />
-                <span className="text-xs font-semibold text-foreground uppercase tracking-widest">Why Us</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-foreground mb-4 text-balance">
+            <div className="mb-14 max-w-2xl md:mb-16">
+              <p className="section-eyebrow">Why Us</p>
+              <h2 className="section-title mb-4">
                 The Impetus Difference
               </h2>
-              <p className="text-base md:text-lg text-foreground/60 font-normal max-w-2xl mx-auto">
+              <p className="section-lede">
                 Every detail crafted for the discerning collector. Experience sneaker retail elevated.
               </p>
             </div>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={100}>
-            <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-              <div className="group p-8 rounded-3xl bg-gradient-to-br from-card to-card/50 border border-foreground/10 hover:border-foreground/30 transition-all duration-500 hover:shadow-xl hover:shadow-foreground/5 hover:-translate-y-1">
-                <div className="w-14 h-14 rounded-2xl bg-foreground/5 flex items-center justify-center mb-6 group-hover:bg-foreground/10 transition-colors duration-300 group-hover:scale-110">
-                  <svg className="w-7 h-7 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="grid gap-px overflow-hidden border border-foreground/10 bg-foreground/10 md:grid-cols-3">
+              <div className="group bg-[var(--surface-warm)] p-8 transition-colors duration-300 hover:bg-white md:p-10">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center border border-foreground/10 bg-foreground/[0.04]">
+                  <svg className="h-6 w-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
-                <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-3">Authentic Guaranteed</h3>
-                <p className="text-sm md:text-base text-foreground/60 leading-relaxed">
+                <h3 className="mb-3 text-xl font-black uppercase tracking-tight text-foreground">Authentic Guaranteed</h3>
+                <p className="text-sm leading-relaxed text-foreground/60 md:text-base">
                   Every pair verified through our rigorous authentication process. Your peace of mind, our promise.
                 </p>
               </div>
 
-              <div className="group p-8 rounded-3xl bg-gradient-to-br from-card to-card/50 border border-foreground/10 hover:border-foreground/30 transition-all duration-500 hover:shadow-xl hover:shadow-foreground/5 hover:-translate-y-1">
-                <div className="w-14 h-14 rounded-2xl bg-foreground/5 flex items-center justify-center mb-6 group-hover:bg-foreground/10 transition-colors duration-300 group-hover:scale-110">
-                  <svg className="w-7 h-7 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="group bg-[var(--surface-warm)] p-8 transition-colors duration-300 hover:bg-white md:p-10">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center border border-foreground/10 bg-foreground/[0.04]">
+                  <svg className="h-6 w-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-3">Exclusive Drops</h3>
-                <p className="text-sm md:text-base text-foreground/60 leading-relaxed">
+                <h3 className="mb-3 text-xl font-black uppercase tracking-tight text-foreground">Exclusive Drops</h3>
+                <p className="text-sm leading-relaxed text-foreground/60 md:text-base">
                   First access to limited releases. Be among the few who own the pairs that define culture.
                 </p>
               </div>
 
-              <div className="group p-8 rounded-3xl bg-gradient-to-br from-card to-card/50 border border-foreground/10 hover:border-foreground/30 transition-all duration-500 hover:shadow-xl hover:shadow-foreground/5 hover:-translate-y-1">
-                <div className="w-14 h-14 rounded-2xl bg-foreground/5 flex items-center justify-center mb-6 group-hover:bg-foreground/10 transition-colors duration-300 group-hover:scale-110">
-                  <svg className="w-7 h-7 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="group bg-[var(--surface-warm)] p-8 transition-colors duration-300 hover:bg-white md:p-10">
+                <div className="mb-6 flex h-12 w-12 items-center justify-center border border-foreground/10 bg-foreground/[0.04]">
+                  <svg className="h-6 w-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <h3 className="text-xl md:text-2xl font-semibold text-foreground mb-3">Premium Packaging</h3>
-                <p className="text-sm md:text-base text-foreground/60 leading-relaxed">
+                <h3 className="mb-3 text-xl font-black uppercase tracking-tight text-foreground">Premium Packaging</h3>
+                <p className="text-sm leading-relaxed text-foreground/60 md:text-base">
                   Unboxing experience designed to match the quality within. Every detail intentional.
                 </p>
               </div>
@@ -1487,323 +1556,224 @@ export default function Page() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="px-4 md:px-8 py-16 md:py-20 bg-gradient-to-b from-background via-foreground/[0.02] to-background border-t border-foreground/10">
+      <section className="section-pad surface-paper border-t border-foreground/[0.06]">
         <div className="max-w-7xl mx-auto">
           <ScrollReveal direction="up" delay={100}>
-            <div className="text-center mb-16 md:mb-20">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-foreground/5 border border-foreground/10 mb-6">
-                <span className="w-1.5 h-1.5 rounded-full bg-foreground animate-pulse" />
-                <span className="text-xs font-semibold text-foreground uppercase tracking-widest">Testimonials</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-foreground mb-4 text-balance">
+            <div className="mb-12 max-w-2xl md:mb-16">
+              <p className="section-eyebrow">Testimonials</p>
+              <h2 className="section-title mb-4">
                 What Collectors Say
               </h2>
-              <p className="text-base md:text-lg text-foreground/60 font-normal max-w-2xl mx-auto">
+              <p className="section-lede">
                 Join thousands of satisfied collectors who trust The Impetus for their sneaker journey.
               </p>
             </div>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={100}>
-            <div className="grid md:grid-cols-3 gap-8 md:gap-12">
-              <div className="group p-8 rounded-3xl bg-card border border-foreground/10 hover:border-foreground/20 transition-all duration-500 hover:shadow-xl hover:shadow-foreground/5 hover:-translate-y-1">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5 text-foreground" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-sm md:text-base text-foreground/80 leading-relaxed mb-6">
-                  "The authentication process gave me complete confidence. My AJ11s arrived in perfect condition. This is how sneaker retail should be."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-foreground/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-foreground font-semibold">JM</span>
+            <div className="grid gap-4 md:grid-cols-3 md:gap-5">
+              {[
+                {
+                  quote: 'The authentication process gave me complete confidence. My AJ11s arrived in perfect condition. This is how sneaker retail should be.',
+                  initials: 'JM',
+                  name: 'James M.',
+                  role: 'Verified Collector',
+                },
+                {
+                  quote: "First access to drops is incredible. I've secured pairs I never thought I'd get. The unboxing experience alone is worth it.",
+                  initials: 'SK',
+                  name: 'Sarah K.',
+                  role: 'Premium Member',
+                },
+                {
+                  quote: 'Customer service is exceptional. They helped me find my grail pair after months of searching. Truly dedicated to collectors.',
+                  initials: 'DL',
+                  name: 'David L.',
+                  role: 'Loyal Customer',
+                },
+              ].map((t) => (
+                <div
+                  key={t.initials}
+                  className="group flex flex-col border border-foreground/[0.08] bg-white/70 p-7 transition-all duration-300 hover:border-foreground/20 hover:bg-white hover:shadow-[0_16px_40px_rgba(20,16,12,0.06)] md:p-8"
+                >
+                  <div className="mb-5 flex gap-0.5">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="h-4 w-4 text-foreground" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
                   </div>
-                  <div>
-                    <p className="font-semibold text-foreground text-sm">James M.</p>
-                    <p className="text-xs text-foreground/60">Verified Collector</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group p-8 rounded-3xl bg-card border border-foreground/10 hover:border-foreground/20 transition-all duration-500 hover:shadow-xl hover:shadow-foreground/5 hover:-translate-y-1">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5 text-foreground" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-sm md:text-base text-foreground/80 leading-relaxed mb-6">
-                  "First access to drops is incredible. I've secured pairs I never thought I'd get. The unboxing experience alone is worth it."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-foreground/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-foreground font-semibold">SK</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground text-sm">Sarah K.</p>
-                    <p className="text-xs text-foreground/60">Premium Member</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="group p-8 rounded-3xl bg-card border border-foreground/10 hover:border-foreground/20 transition-all duration-500 hover:shadow-xl hover:shadow-foreground/5 hover:-translate-y-1">
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-5 h-5 text-foreground" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="text-sm md:text-base text-foreground/80 leading-relaxed mb-6">
-                  "Customer service is exceptional. They helped me find my grail pair after months of searching. Truly dedicated to collectors."
-                </p>
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-foreground/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-foreground font-semibold">DL</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground text-sm">David L.</p>
-                    <p className="text-xs text-foreground/60">Loyal Customer</p>
+                  <p className="mb-8 flex-1 text-sm leading-relaxed text-foreground/75 md:text-base">
+                    &ldquo;{t.quote}&rdquo;
+                  </p>
+                  <div className="flex items-center gap-3 border-t border-foreground/[0.06] pt-5">
+                    <div className="flex h-11 w-11 items-center justify-center border border-foreground/10 bg-foreground/[0.04]">
+                      <span className="text-xs font-bold tracking-wide text-foreground">{t.initials}</span>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{t.name}</p>
+                      <p className="text-[11px] uppercase tracking-[0.14em] text-foreground/45">{t.role}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
           </ScrollReveal>
         </div>
       </section>
 
       {/* Newsletter Section */}
-      <section className="px-4 md:px-8 py-16 md:py-20 bg-white border-t border-foreground/10">
+      <section id="newsletter" className="relative overflow-hidden border-y border-foreground/[0.08] surface-ink px-4 py-16 text-white md:px-8 md:py-20">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.07),transparent_55%)]" />
         <ScrollReveal direction="up" delay={100}>
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-foreground/5 border border-foreground/10 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-foreground animate-pulse" />
-              <span className="text-xs font-semibold text-foreground uppercase tracking-widest">Stay Connected</span>
+          <div className="relative z-10 mx-auto grid max-w-5xl gap-10 md:grid-cols-[1.1fr_0.9fr] md:items-center">
+            <div>
+              <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.32em] text-white/50">Stay Connected</p>
+              <h2 className="text-4xl font-black uppercase tracking-tight text-white md:text-5xl">
+                Join the Movement
+              </h2>
+              <p className="mt-4 max-w-md text-base text-white/65">
+                Be the first to know about exclusive drops, early access, and collector-only events. No spam, just culture.
+              </p>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-foreground mb-4 text-balance">
-              Join the Movement
-            </h2>
-            <p className="text-base md:text-lg text-foreground/60 font-normal max-w-2xl mx-auto mb-8 md:mb-12">
-              Be the first to know about exclusive drops, early access, and collector-only events. No spam, just culture.
-            </p>
-            {isSubscribed ? (
-              <div className="max-w-xl mx-auto p-6 rounded-none bg-foreground/5 border border-foreground/20">
-                <p className="text-foreground font-semibold text-center">Thanks for subscribing! 🎉</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="flex-1 px-6 py-4 rounded-none border-2 border-foreground/20 bg-card text-foreground placeholder-foreground/40 focus:border-foreground focus:outline-none transition-colors duration-300 hover:border-foreground/40"
-                />
-                <button type="submit" className="group px-8 py-4 bg-foreground text-background rounded-none font-semibold hover:bg-foreground/90 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-foreground/25 whitespace-nowrap relative overflow-hidden">
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-background/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                  <span className="relative z-10">Subscribe</span>
-                </button>
-              </form>
-            )}
-            <p className="text-xs text-foreground/40 mt-4">
-              By subscribing, you agree to receive marketing emails. Unsubscribe anytime.
-            </p>
+            <div>
+              {isSubscribed ? (
+                <div className="border border-white/20 bg-white/5 p-6">
+                  <p className="text-center font-semibold text-white">Thanks for subscribing.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleSubscribe} className="flex flex-col gap-3 sm:flex-row">
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="min-h-12 flex-1 border border-white/25 bg-white/5 px-5 text-sm text-white placeholder-white/40 outline-none transition-colors duration-300 focus:border-white/60"
+                  />
+                  <button type="submit" className="min-h-12 whitespace-nowrap bg-white px-8 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-all duration-300 hover:bg-white/90">
+                    Subscribe
+                  </button>
+                </form>
+              )}
+              <p className="mt-3 text-[11px] text-white/40">
+                By subscribing, you agree to receive marketing emails. Unsubscribe anytime.
+              </p>
+            </div>
           </div>
         </ScrollReveal>
       </section>
 
       {/* Footer Link Destinations */}
-      <section className="px-4 md:px-8 py-16 md:py-20 bg-[#f4f1eb] border-t border-foreground/10">
+      <section className="section-pad surface-warm border-t border-foreground/[0.06]">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-10 grid gap-6 md:grid-cols-[0.85fr_1.15fr] md:items-end">
+          <div className="mb-10 grid gap-6 md:mb-12 md:grid-cols-[0.9fr_1.1fr] md:items-end">
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-foreground/55">Information</p>
-              <h2 className="text-4xl font-black uppercase leading-[0.9] tracking-normal text-foreground md:text-6xl">
+              <p className="section-eyebrow">Information</p>
+              <h2 className="section-title">
                 Everything in one place.
               </h2>
             </div>
+            <p className="section-lede md:justify-self-end md:text-right">
+              Policies, support, and ways to reach the team — clear and easy to find.
+            </p>
           </div>
 
-          <div className="grid gap-px overflow-hidden bg-foreground/10 md:grid-cols-3">
-            <article id="about" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">About</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">Our Story</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                The Impetus is built for sharp sneaker edits, honest product presentation, and fast access to pieces that work in real wardrobes.
-              </p>
-            </article>
-
-            <article id="contact" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">Contact</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">Talk to us</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                For order help, sizing questions, or sourcing requests, reach the team at support@theimpetus.com.
-              </p>
-            </article>
-
-            <article id="press" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">Press</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">Editorial desk</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                Brand assets, launch notes, and collaboration enquiries are handled through press@theimpetus.com.
-              </p>
-            </article>
-
-            <article id="shipping" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">Support</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">Shipping Info</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                Orders are prepared after confirmation and dispatched with tracking once payment and stock checks are complete.
-              </p>
-            </article>
-
-            <article id="returns" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">Support</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">Returns</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                Return requests are reviewed against item condition, delivery status, and product eligibility.
-              </p>
-            </article>
-
-            <article id="faq" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">Support</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">FAQ</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                Common questions cover sizing, authenticity, dispatch timing, payment confirmation, and order updates.
-              </p>
-            </article>
-
-            <article id="instagram" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">Connect</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">Instagram</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                Follow release styling, launch previews, and editorial drops from the Impetus team.
-              </p>
-            </article>
-
-            <article id="twitter" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">Connect</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">Twitter</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                Drop reminders, availability notes, and quick support updates live here.
-              </p>
-            </article>
-
-            <article id="policies" className="bg-[#f4f1eb] p-6 md:p-8">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-foreground/45">Policies</p>
-              <h3 className="text-2xl font-black uppercase leading-none text-foreground">Privacy & Terms</h3>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/62">
-                Customer data, checkout activity, and order communication are handled only for store operations and support.
-              </p>
-            </article>
+          <div className="grid gap-px overflow-hidden border border-foreground/10 bg-foreground/10 md:grid-cols-3">
+            {[
+              { id: 'about', kicker: 'About', title: 'Our Story', body: 'The Impetus is built for sharp sneaker edits, honest product presentation, and fast access to pieces that work in real wardrobes.', href: '/about' },
+              { id: 'contact', kicker: 'Contact', title: 'Talk to us', body: 'For order help, sizing questions, or sourcing requests, reach the team at support@theimpetus.com.', href: 'mailto:support@theimpetus.com' },
+              { id: 'press', kicker: 'Press', title: 'Editorial desk', body: 'Brand assets, launch notes, and collaboration enquiries are handled through press@theimpetus.com.', href: 'mailto:press@theimpetus.com' },
+              { id: 'shipping', kicker: 'Support', title: 'Shipping Info', body: 'Orders are prepared after confirmation and dispatched with tracking once payment and stock checks are complete.', href: '/legal/shipping' },
+              { id: 'returns', kicker: 'Support', title: 'Returns', body: 'Return requests are reviewed against item condition, delivery status, and product eligibility.', href: '/legal/returns' },
+              { id: 'faq', kicker: 'Support', title: 'FAQ', body: 'Common questions cover sizing, authenticity, dispatch timing, payment confirmation, and order updates.', href: '/legal/shipping' },
+              { id: 'instagram', kicker: 'Connect', title: 'Instagram', body: 'Follow release styling, launch previews, and editorial drops from the Impetus team.', href: 'https://instagram.com/theimpetus', external: true },
+              { id: 'twitter', kicker: 'Connect', title: 'Twitter', body: 'Drop reminders, availability notes, and quick support updates live here.', href: 'https://twitter.com/theimpetus', external: true },
+              { id: 'policies', kicker: 'Policies', title: 'Privacy & Terms', body: 'Customer data, checkout activity, and order communication are handled only for store operations and support.', href: '/legal/privacy' },
+            ].map((item) => (
+              <a
+                key={item.id}
+                href={item.href}
+                {...(item.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className="block bg-[var(--surface-warm)] p-6 transition-colors duration-300 hover:bg-white md:p-8"
+              >
+                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-foreground/40">{item.kicker}</p>
+                <h3 className="text-xl font-black uppercase leading-none tracking-tight text-foreground md:text-2xl">{item.title}</h3>
+                <p className="mt-4 text-sm leading-relaxed text-foreground/60">
+                  {item.body}
+                </p>
+              </a>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="px-4 md:px-8 py-12 md:py-16 border-t border-foreground/10 bg-white">
-        <div className="max-w-7xl mx-auto">
-          {/* Footer Links Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 mb-12 md:mb-16">
+      <footer className="border-t border-white/10 bg-[var(--surface-ink)] px-4 py-12 text-white md:px-8 md:py-16">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-12 grid gap-10 border-b border-white/10 pb-12 md:mb-14 md:grid-cols-[1.1fr_2fr] md:gap-16">
             <div>
-              <h4 className="font-semibold text-foreground text-sm md:text-base mb-4 md:mb-6">Shop</h4>
-              <ul className="space-y-3">
-                <li>
-                  <a href="/#shop" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    All Products
-                  </a>
-                </li>
-                <li>
-                  <a href="/#collections" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Collections
-                  </a>
-                </li>
-                <li>
-                  <a href="/orders" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Track Order
-                  </a>
-                </li>
-              </ul>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-white/45">The</p>
+              <p className="mt-1 text-2xl font-black uppercase tracking-[0.18em]">Impetus</p>
+              <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/50">
+                Premium sneakers and streetwear — curated for culture, built for the daily rotation.
+              </p>
             </div>
-            <div>
-              <h4 className="font-semibold text-foreground text-sm md:text-base mb-4 md:mb-6">Company</h4>
-              <ul className="space-y-3">
-                <li>
-                  <a href="/about" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="/#contact" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Contact
-                  </a>
-                </li>
-                <li>
-                  <a href="/#newsletter" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Newsletter
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground text-sm md:text-base mb-4 md:mb-6">Support</h4>
-              <ul className="space-y-3">
-                <li>
-                  <a href="/legal/shipping" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Shipping Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="/legal/returns" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Returns & Refunds
-                  </a>
-                </li>
-                <li>
-                  <a href="mailto:support@theimpetus.com" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Help Center
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold text-foreground text-sm md:text-base mb-4 md:mb-6">Legal</h4>
-              <ul className="space-y-3">
-                <li>
-                  <a href="/legal/terms" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a href="/legal/privacy" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="mailto:support@theimpetus.com" className="text-xs md:text-sm text-foreground/60 hover:text-foreground transition-colors duration-200">
-                    Contact Us
-                  </a>
-                </li>
-              </ul>
+            <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-10">
+              <div>
+                <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Shop</h4>
+                <ul className="space-y-3">
+                  <li><Link href="/#shop" className="text-sm text-white/65 transition-colors hover:text-white">All Products</Link></li>
+                  <li><Link href="/#collections" className="text-sm text-white/65 transition-colors hover:text-white">Collections</Link></li>
+                  <li><Link href="/#new-arrivals" className="text-sm text-white/65 transition-colors hover:text-white">New Arrivals</Link></li>
+                  <li><Link href="/#sale" className="text-sm text-white/65 transition-colors hover:text-white">Sale</Link></li>
+                  <li><a href="/orders" className="text-sm text-white/65 transition-colors hover:text-white">Track Order</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Company</h4>
+                <ul className="space-y-3">
+                  <li><a href="/about" className="text-sm text-white/65 transition-colors hover:text-white">About Us</a></li>
+                  <li><a href="/vendor" className="text-sm text-white/65 transition-colors hover:text-white">Sell With Us</a></li>
+                  <li><Link href="/#newsletter" className="text-sm text-white/65 transition-colors hover:text-white">Newsletter</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Support</h4>
+                <ul className="space-y-3">
+                  <li><a href="/legal/shipping" className="text-sm text-white/65 transition-colors hover:text-white">Shipping Policy</a></li>
+                  <li><a href="/legal/returns" className="text-sm text-white/65 transition-colors hover:text-white">Returns & Refunds</a></li>
+                  <li><a href="mailto:support@theimpetus.com" className="text-sm text-white/65 transition-colors hover:text-white">Help Center</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Legal</h4>
+                <ul className="space-y-3">
+                  <li><a href="/legal/terms" className="text-sm text-white/65 transition-colors hover:text-white">Terms of Service</a></li>
+                  <li><a href="/legal/privacy" className="text-sm text-white/65 transition-colors hover:text-white">Privacy Policy</a></li>
+                  <li><a href="mailto:support@theimpetus.com" className="text-sm text-white/65 transition-colors hover:text-white">Contact Us</a></li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          {/* Footer Bottom */}
-          <div className="border-t border-foreground/10 pt-8 md:pt-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0">
-            <p className="text-xs md:text-sm text-foreground/60 font-normal">
-              © 2025 The Impetus. All rights reserved.
+          <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+            <p className="text-xs text-white/40">
+              © {new Date().getFullYear()} The Impetus. All rights reserved.
             </p>
-            <div className="flex gap-6 md:gap-8 text-xs md:text-sm text-foreground/60">
-              <a href="#policies" className="hover:text-foreground transition-colors duration-200">
-                Privacy Policy
+            <div className="flex items-center gap-5">
+              <a href="https://instagram.com/theimpetus" target="_blank" rel="noopener noreferrer" className="text-white/40 transition-colors hover:text-white/80" aria-label="Instagram">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
               </a>
-              <a href="#policies" className="hover:text-foreground transition-colors duration-200">
-                Terms of Service
+              <a href="https://twitter.com/theimpetus" target="_blank" rel="noopener noreferrer" className="text-white/40 transition-colors hover:text-white/80" aria-label="Twitter">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
               </a>
+              <a href="mailto:support@theimpetus.com" className="text-white/40 transition-colors hover:text-white/80" aria-label="Email">
+                <Mail className="h-4 w-4" />
+              </a>
+              <span className="h-3 w-px bg-white/20" />
+              <a href="/legal/privacy" className="text-xs text-white/40 transition-colors hover:text-white/80">Privacy</a>
+              <a href="/legal/terms" className="text-xs text-white/40 transition-colors hover:text-white/80">Terms</a>
             </div>
           </div>
         </div>

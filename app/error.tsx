@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Link from 'next/link'
 
 export default function Error({
   error,
@@ -23,7 +24,7 @@ export default function Error({
           Something Went Wrong
         </h2>
         <p className="text-lg text-foreground/70 mb-10 max-w-lg mx-auto leading-relaxed">
-          We encountered an unexpected error. Our team has been notified and we're working on it.
+          We encountered an unexpected error. Our team has been notified and we&apos;re working on it.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
@@ -32,12 +33,12 @@ export default function Error({
           >
             Try Again
           </button>
-          <a
+          <Link
             href="/"
             className="inline-flex min-h-12 items-center justify-center border border-foreground px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-foreground transition-all duration-300 hover:bg-foreground hover:text-background active:scale-[0.98]"
           >
             Back to Home
-          </a>
+          </Link>
         </div>
         {error.digest && (
           <p className="text-sm text-foreground/50 mt-8">

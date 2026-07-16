@@ -13,6 +13,15 @@ interface User {
   user_metadata?: any
 }
 
+function mapUser(supabaseUser: { id: string; email?: string; user_metadata?: any } | null | undefined): User | null {
+  if (!supabaseUser) return null
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email ?? '',
+    user_metadata: supabaseUser.user_metadata,
+  }
+}
+
 interface AuthContextType {
   user: User | null
   isLoading: boolean
@@ -30,12 +39,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
+      setUser(mapUser(session?.user))
       setIsLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      setUser(mapUser(session?.user))
     })
 
     return () => subscription.unsubscribe()

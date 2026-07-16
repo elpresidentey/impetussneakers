@@ -17,17 +17,17 @@ export function AdminProductForm({ product, onSubmit, onCancel, isSubmitting }: 
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>(product?.image || '')
   const [formData, setFormData] = useState({
-    name: product?.name || '',
-    description: product?.description || '',
-    price: product?.price?.toString() || '',
-    image_url: product?.image || '',
-    alt_text: product?.alt || '',
-    sizes: Array.isArray(product?.sizes) ? product.sizes.join(', ') : '',
-    colors: Array.isArray(product?.colors) ? product.colors.join(', ') : '',
-    rating: product?.rating?.toString() || '4',
-    in_stock: product?.inStock ?? true,
-    stock_quantity: product?.stockQuantity?.toString() || '',
-    category: product?.category || 'new-arrivals',
+    name: String(product?.name || ''),
+    description: String(product?.description || ''),
+    price: product?.price != null ? String(product.price) : '',
+    image_url: String(product?.image || ''),
+    alt_text: String(product?.alt || ''),
+    sizes: Array.isArray(product?.sizes) ? (product.sizes as string[]).join(', ') : '',
+    colors: Array.isArray(product?.colors) ? (product.colors as string[]).join(', ') : '',
+    rating: product?.rating != null ? String(product.rating) : '4',
+    in_stock: Boolean(product?.inStock ?? true),
+    stock_quantity: product?.stockQuantity != null ? String(product.stockQuantity) : '',
+    category: String(product?.category || 'new-arrivals'),
   })
 
   const handleImageSelect = (file: File, previewUrl: string) => {
@@ -48,8 +48,8 @@ export function AdminProductForm({ product, onSubmit, onCancel, isSubmitting }: 
   }
 
   const getPreviewData = () => {
-    const sizesArray = formData.sizes.split(',').map(s => s.trim()).filter(s => s)
-    const colorsArray = formData.colors.split(',').map(c => c.trim()).filter(c => c)
+    const sizesArray = formData.sizes.split(',').map((s: string) => s.trim()).filter((s: string) => s)
+    const colorsArray = formData.colors.split(',').map((c: string) => c.trim()).filter((c: string) => c)
     
     return {
       name: formData.name || 'Product Name',
@@ -307,7 +307,7 @@ export function AdminProductForm({ product, onSubmit, onCancel, isSubmitting }: 
                     <p className="text-xs text-white/50 mt-1">Enter sizes separated by commas (e.g., 7, 8, 9, 10, 11, 12)</p>
                     {formData.sizes && (
                       <div className="flex flex-wrap gap-2 mt-3">
-                        {formData.sizes.split(',').map((size, idx) => (
+                        {formData.sizes.split(',').map((size: string, idx: number) => (
                           <span key={idx} className="px-3 py-1 bg-green-500/20 border border-green-400/30 rounded-lg text-white text-sm">
                             {size.trim()}
                           </span>
@@ -333,7 +333,7 @@ export function AdminProductForm({ product, onSubmit, onCancel, isSubmitting }: 
                     <p className="text-xs text-white/50 mt-1">Enter hex color codes separated by commas (e.g., #000000, #FFFFFF)</p>
                     {formData.colors && (
                       <div className="flex flex-wrap gap-2 mt-3">
-                        {formData.colors.split(',').map((color, idx) => (
+                        {formData.colors.split(',').map((color: string, idx: number) => (
                           <div key={idx} className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-lg">
                             <div
                               className="w-6 h-6 rounded-full border-2 border-white/30"
@@ -516,7 +516,7 @@ export function AdminProductForm({ product, onSubmit, onCancel, isSubmitting }: 
                     <div>
                       <span className="text-xs text-white/60 font-semibold">Sizes:</span>
                       <div className="flex flex-wrap gap-1 mt-1">
-                        {preview.sizes.map((size, idx) => (
+                        {preview.sizes.map((size: string, idx: number) => (
                           <span key={idx} className="px-2 py-1 bg-white/10 rounded text-white text-xs">
                             {size}
                           </span>
@@ -526,7 +526,7 @@ export function AdminProductForm({ product, onSubmit, onCancel, isSubmitting }: 
                     <div>
                       <span className="text-xs text-white/60 font-semibold">Colors:</span>
                       <div className="flex gap-2 mt-1">
-                        {preview.colors.map((color, idx) => (
+                        {preview.colors.map((color: string, idx: number) => (
                           <div
                             key={idx}
                             className="w-6 h-6 rounded-full border-2 border-white/30"

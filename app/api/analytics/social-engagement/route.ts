@@ -45,11 +45,15 @@ export async function POST(request: Request) {
     // Update daily social metrics for investor dashboard
     const today = new Date().toISOString().split('T')[0]
     
-    await supabase.rpc('increment_daily_social_metric', {
-      metric_date: today,
-      metric_type: validatedData.type,
-      increment_by: 1
-    }).catch(console.error)
+    try {
+      await supabase.rpc('increment_daily_social_metric', {
+        metric_date: today,
+        metric_type: validatedData.type,
+        increment_by: 1
+      })
+    } catch (rpcError) {
+      console.error(rpcError)
+    }
 
     return NextResponse.json({ success: true })
 

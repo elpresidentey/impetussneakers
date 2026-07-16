@@ -4,9 +4,10 @@ import { sendOrderConfirmationEmail } from '@/lib/email'
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     // Get order details with user email
     const { data: order, error: orderError } = await supabase
       .from('orders')
@@ -14,7 +15,7 @@ export async function POST(
         *,
         users!inner(email)
       `)
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
 
     if (orderError || !order) {

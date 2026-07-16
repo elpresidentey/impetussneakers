@@ -10,6 +10,7 @@ import { AnalyticsProvider } from '@/contexts/analytics-context'
 import { AuthProvider } from '@/contexts/auth-context'
 import { UIProvider } from '@/contexts/ui-context'
 import { Toast } from '@/components/toast'
+import { BackToHome } from '@/components/back-to-home'
 
 const lato = Lato({
   weight: ['300', '400', '700', '900'],
@@ -46,8 +47,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${lato.variable} bg-background`}>
-      <body className="font-sans antialiased bg-background text-foreground">
+    <html lang="en" className={`${lato.variable} ${lato.className} bg-background`}>
+      <body className="font-sans antialiased bg-background text-foreground page-shell">
         <ErrorBoundary>
           <ToastProvider>
             <AuthProvider>
@@ -62,6 +63,7 @@ export default function RootLayout({
               </AnalyticsProvider>
             </AuthProvider>
             <Toast />
+            <BackToHome />
           </ToastProvider>
         </ErrorBoundary>
         {process.env.NODE_ENV === 'production' && <Analytics />}

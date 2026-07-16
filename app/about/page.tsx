@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
@@ -129,12 +131,12 @@ export default function AboutPage() {
           <p className="text-foreground/80 leading-relaxed mb-8 max-w-2xl mx-auto">
             Explore our curated collection of premium sneakers and streetwear.
           </p>
-          <a 
+          <Link 
             href="/#shop" 
             className="inline-flex min-h-12 items-center justify-center bg-foreground text-background px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] transition-all duration-300 hover:bg-foreground/90 active:scale-[0.98]"
           >
             Shop Now
-          </a>
+          </Link>
         </div>
       </section>
     </div>

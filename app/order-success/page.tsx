@@ -64,7 +64,7 @@ function OrderSuccessContent() {
     }
   }
   const handlePrint = useReactToPrint({
-    content: () => receiptRef.current,
+    contentRef: receiptRef,
     documentTitle: `Receipt-${order?.order_number || orderNumber}`,
   })
 

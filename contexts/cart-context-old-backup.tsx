@@ -31,7 +31,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const { addToast } = useToast()
   const { trackEvent } = useAnalytics()
-  const { user, token } = useAuth()
+  const { user } = useAuth()
 
   // Clear cart from localStorage on mount to start fresh
   useEffect(() => {
@@ -40,12 +40,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   // Sync cart with backend when user is authenticated
   useEffect(() => {
-    if (user && token) {
+    if (user) {
       // In a real app, you would sync cart with backend here
       // For MVP, we'll keep localStorage as primary storage
       console.log('User authenticated, could sync cart with backend')
     }
-  }, [user, token])
+  }, [user])
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {

@@ -9,6 +9,15 @@ interface User {
   user_metadata?: any
 }
 
+function mapUser(supabaseUser: { id: string; email?: string; user_metadata?: any } | null | undefined): User | null {
+  if (!supabaseUser) return null
+  return {
+    id: supabaseUser.id,
+    email: supabaseUser.email ?? '',
+    user_metadata: supabaseUser.user_metadata,
+  }
+}
+
 interface AuthContextType {
   user: User | null
   isLoading: boolean
@@ -35,7 +44,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data: { session }, error } = await supabase.auth.getSession()
         if (error) throw error
-        setUser(session?.user ?? null)
+        setUser(mapUser(session?.user))
       } catch (err) {
         console.error('Error initializing auth:', err)
         setError('Failed to initialize authentication')
@@ -48,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      setUser(mapUser(session?.user))
       setIsLoading(false)
     })
 

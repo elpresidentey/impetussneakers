@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-background py-20 px-4 md:px-8">
@@ -120,9 +122,9 @@ export default function PrivacyPolicy() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-foreground/10">
-          <a href="/" className="text-sm font-semibold text-foreground hover:text-foreground/80 transition-colors">
+          <Link href="/" className="text-sm font-semibold text-foreground hover:text-foreground/80 transition-colors">
             ← Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     </div>

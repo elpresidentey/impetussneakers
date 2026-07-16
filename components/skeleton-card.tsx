@@ -1,26 +1,20 @@
 export function SkeletonCard() {
   return (
-    <div className="space-y-4">
-      <div className="relative w-full aspect-square rounded-2xl bg-foreground/5 border border-foreground/10 animate-pulse" />
-      <div className="space-y-3">
-        <div className="h-6 bg-foreground/10 rounded animate-pulse" />
-        <div className="h-4 bg-foreground/5 rounded w-3/4 animate-pulse" />
-        <div className="flex gap-2 mt-2">
-          <div className="h-4 w-4 rounded-full bg-foreground/10 animate-pulse" />
-          <div className="h-4 w-4 rounded-full bg-foreground/10 animate-pulse" />
-          <div className="h-4 w-4 rounded-full bg-foreground/10 animate-pulse" />
+    <div className="flex flex-col">
+      <div className="relative w-full aspect-square bg-foreground/5 animate-pulse" />
+      <div className="flex flex-1 flex-col px-1 py-3">
+        <div className="flex flex-col gap-1.5">
+          <div className="h-4 bg-foreground/10 rounded animate-pulse w-3/4" />
+          <div className="h-4 bg-foreground/10 rounded animate-pulse w-1/3" />
         </div>
-        <div className="flex gap-2 pt-2">
-          <div className="h-6 w-12 bg-foreground/10 rounded animate-pulse" />
-          <div className="h-6 w-12 bg-foreground/10 rounded animate-pulse" />
+        <div className="mt-auto flex items-end justify-between gap-3 pt-4">
+          <div className="flex gap-1.5">
+            <div className="h-7 w-8 bg-foreground/10 rounded animate-pulse" />
+            <div className="h-7 w-8 bg-foreground/10 rounded animate-pulse" />
+            <div className="h-7 w-8 bg-foreground/10 rounded animate-pulse" />
+          </div>
+          <div className="h-10 w-10 bg-foreground/10 rounded animate-pulse" />
         </div>
-      </div>
-      <div className="flex items-end justify-between pt-3 border-t border-foreground/10">
-        <div className="space-y-2">
-          <div className="h-6 bg-foreground/10 rounded w-24 animate-pulse" />
-          <div className="h-4 bg-foreground/5 rounded w-16 animate-pulse" />
-        </div>
-        <div className="h-8 w-24 bg-foreground/10 rounded animate-pulse" />
       </div>
     </div>
   )
