@@ -165,6 +165,7 @@
   h1, h2, h3, h4, h5, h6 {
     @apply font-black tracking-tight text-balance;
     color: inherit;
+    text-align: left;
   }
   
   h1 {
@@ -192,18 +193,65 @@
   p {
     @apply text-base md:text-lg leading-relaxed;
     letter-spacing: 0.005em;
+    text-align: left;
   }
   
   .uppercase {
     letter-spacing: 0.16em;
+  }
+
+  /* Explicit alignment helpers — use these instead of fighting defaults */
+  .align-start,
+  .text-left {
+    text-align: left;
+  }
+
+  .align-center,
+  .text-center {
+    text-align: center;
+  }
+
+  .align-end,
+  .text-right {
+    text-align: right;
   }
   
   .text-center h1,
   .text-center h2,
   .text-center h3,
   .text-center h4,
-  .text-center p {
+  .text-center p,
+  .text-center li,
+  .align-center h1,
+  .align-center h2,
+  .align-center h3,
+  .align-center h4,
+  .align-center p {
     text-align: center;
+  }
+
+  .text-right h1,
+  .text-right h2,
+  .text-right h3,
+  .text-right h4,
+  .text-right p,
+  .align-end h1,
+  .align-end h2,
+  .align-end h3,
+  .align-end h4,
+  .align-end p {
+    text-align: right;
+  }
+
+  /* Prose / long-form body always left-aligned for readability */
+  .prose-body,
+  .prose-body p,
+  .prose-body li,
+  .prose-body h1,
+  .prose-body h2,
+  .prose-body h3,
+  .prose-body h4 {
+    text-align: left;
   }
 
   /* Subtle scrollbar for desktop polish */

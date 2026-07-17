@@ -1,174 +1,356 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Store, DollarSign, Users, Truck, Shield, ArrowRight, Check } from 'lucide-react'
+import { Store, DollarSign, Users, Truck, Shield, ArrowRight, Check, ArrowLeft } from 'lucide-react'
 
 interface VendorApplication {
   businessName: string
   email: string
   phone: string
   description: string
+  website: string
   instagramHandle: string
+  expectedMonthlyVolume: string
+  businessType: 'individual' | 'small_business' | 'brand'
+  hasPhysicalStore: boolean
+  agreeToTerms: boolean
 }
 
 export function VendorOnboarding() {
-  const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
+  const [step, setStep] = useState(1)
   const [application, setApplication] = useState<VendorApplication>({
     businessName: '',
     email: '',
     phone: '',
     description: '',
+    website: '',
     instagramHandle: '',
+    expectedMonthlyVolume: '',
+    businessType: 'individual',
+    hasPhysicalStore: false,
+    agreeToTerms: false,
   })
 
   const benefits = [
-    { icon: <DollarSign className="w-8 h-8" />, title: "Low Commission", description: "8% flat rate (vs 15-20% elsewhere)" },
-    { icon: <Users className="w-8 h-8" />, title: "Ready Customers", description: "10,000+ sneaker enthusiasts" },
-    { icon: <Truck className="w-8 h-8" />, title: "Logistics Handled", description: "Integrated DHL, GIG, local couriers" },
-    { icon: <Shield className="w-8 h-8" />, title: "Payment Protection", description: "Guaranteed payout within 24h of delivery" },
+    {
+      icon: DollarSign,
+      title: 'Low Commission',
+      description: 'Only 8% commission on sales (vs 15–20% on other platforms)',
+      highlight: 'Save 40–60% on fees',
+    },
+    {
+      icon: Users,
+      title: 'Ready Customers',
+      description: 'Access to 10,000+ sneaker enthusiasts in Nigeria',
+      highlight: 'Built-in audience',
+    },
+    {
+      icon: Truck,
+      title: 'Logistics Support',
+      description: 'Integrated shipping with DHL, GIG, and local couriers',
+      highlight: 'We handle delivery',
+    },
+    {
+      icon: Shield,
+      title: 'Payment Protection',
+      description: 'Guaranteed payments within 24 hours of delivery',
+      highlight: 'No payment delays',
+    },
   ]
 
-  const handleChange = (field: keyof VendorApplication, value: string) => {
-    setApplication(prev => ({ ...prev, [field]: value }))
-    setError(null)
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!application.businessName || !application.email || !application.phone || !application.description) {
-      setError('Please fill in all required fields')
-      return
-    }
-    setLoading(true)
+  const handleSubmit = async () => {
     try {
       const response = await fetch('/api/vendors/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...application, businessType: 'individual', hasPhysicalStore: false, expectedMonthlyVolume: '', agreeToTerms: true })
+        body: JSON.stringify(application),
       })
+
       if (response.ok) {
-        setSubmitted(true)
+        setStep(4)
       } else {
-        setError('Application failed. Please try again.')
+        alert('Application failed. Please try again.')
       }
-    } catch {
-      setError('Application failed. Please try again.')
-    } finally {
-      setLoading(false)
+    } catch (error) {
+      console.error('Vendor application error:', error)
+      alert('Application failed. Please try again.')
     }
   }
 
-  if (submitted) {
+  if (step === 1) {
     return (
-      <div className="min-h-screen bg-background py-12 px-6">
-        <div className="max-w-2xl mx-auto text-center">
-          <Card>
-            <CardContent className="py-12">
-              <Check className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-4">Application Submitted!</h2>
-              <p className="text-muted-foreground mb-6">
-                We'll review your application and get back to you within 48 hours.
+      <div className="min-h-screen page-shell text-foreground">
+        <section className="relative overflow-hidden surface-ink px-4 pb-14 pt-28 text-white md:px-8 md:pb-20 md:pt-36">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.08),transparent_50%)]" />
+          <div className="relative z-10 mx-auto max-w-7xl">
+            <Link
+              href="/"
+              className="mb-8 inline-flex items-center gap-2 text-sm text-white/55 transition-colors hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to store
+            </Link>
+            <div className="max-w-3xl text-left">
+              <div className="mb-5 inline-flex items-center gap-2 border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">
+                <Store className="h-3.5 w-3.5" />
+                Sell with Impetus
+              </div>
+              <h1 className="text-4xl font-black uppercase leading-[0.9] tracking-tighter text-white md:text-6xl">
+                Become a Vendor Partner
+              </h1>
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-white/70 md:text-lg">
+                Join Nigeria&apos;s fastest-growing sneaker marketplace and scale your business.
               </p>
-              <p className="text-sm text-muted-foreground">Follow up: vendors@theimpetus.com</p>
-            </CardContent>
-          </Card>
-        </div>
+              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-300/90">
+                Currently onboarding 50 select vendors
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="section-pad surface-paper">
+          <div className="mx-auto max-w-7xl">
+            <div className="mb-10 max-w-2xl text-left">
+              <p className="section-eyebrow">Benefits</p>
+              <h2 className="section-title text-4xl md:text-5xl">Why partner with us</h2>
+            </div>
+
+            <div className="mb-12 grid gap-px overflow-hidden border border-foreground/10 bg-foreground/10 md:grid-cols-2">
+              {benefits.map((benefit) => {
+                const Icon = benefit.icon
+                return (
+                  <article
+                    key={benefit.title}
+                    className="bg-white/80 p-7 text-left transition-colors hover:bg-white md:p-8"
+                  >
+                    <div className="mb-4 flex h-11 w-11 items-center justify-center border border-foreground/10 bg-foreground/[0.04]">
+                      <Icon className="h-5 w-5 text-foreground" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-black uppercase tracking-tight text-foreground">
+                      {benefit.title}
+                    </h3>
+                    <p className="mb-3 text-sm leading-relaxed text-foreground/65">
+                      {benefit.description}
+                    </p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700">
+                      {benefit.highlight}
+                    </p>
+                  </article>
+                )
+              })}
+            </div>
+
+            <div className="mb-10 border border-foreground/10 bg-[var(--surface-ink)] p-7 text-left text-white md:p-10">
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/45">
+                Limited time
+              </p>
+              <h2 className="text-2xl font-black uppercase tracking-tight md:text-3xl">
+                Reduced commission for first 50 vendors
+              </h2>
+              <p className="mt-3 max-w-2xl text-base text-white/70">
+                Get <span className="font-semibold text-white">5% commission</span> for the first 6
+                months. Average vendor earns ₦2.5M monthly · Top vendor: ₦8.2M last month.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Button
+                size="lg"
+                onClick={() => setStep(2)}
+                className="h-12 bg-foreground px-8 text-sm font-semibold uppercase tracking-[0.12em] text-background hover:bg-foreground/90"
+              >
+                Start Application <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+              <Link
+                href="/#shop"
+                className="inline-flex min-h-12 items-center justify-center border border-foreground/15 px-6 text-xs font-semibold uppercase tracking-[0.14em] text-foreground/70 transition-colors hover:text-foreground"
+              >
+                Browse the store
+              </Link>
+            </div>
+          </div>
+        </section>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background py-12 px-6">
-      <div className="max-w-3xl mx-auto">
-        {/* Hero */}
-        <div className="text-center mb-10">
-          <Badge variant="secondary" className="mb-4 text-lg px-4 py-2">
-            🚀 Onboarding 50 select vendors
-          </Badge>
-          <h1 className="text-4xl font-bold text-foreground mb-4">Become a Vendor Partner</h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            Join Nigeria's fastest-growing sneaker marketplace and scale your business
-          </p>
+    <div className="min-h-screen page-shell px-4 py-12 text-foreground md:px-8 md:py-16">
+      <div className="mx-auto max-w-2xl">
+        <button
+          type="button"
+          onClick={() => setStep(step > 2 ? step - 1 : 1)}
+          className="mb-6 inline-flex items-center gap-2 text-sm text-foreground/55 transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </button>
+
+        <div className="mb-8 text-left">
+          <p className="section-eyebrow">Application</p>
+          <h1 className="section-title text-3xl md:text-4xl">
+            {step === 4 ? 'You\'re in the queue' : `Step ${step - 1} of 2`}
+          </h1>
+          {step < 4 && (
+            <p className="mt-2 text-sm text-foreground/55">
+              Tell us about your business. We review applications within 48 hours.
+            </p>
+          )}
         </div>
 
-        {/* Benefits - compact */}
-        <div className="grid grid-cols-2 gap-4 mb-10">
-          {benefits.map((benefit, i) => (
-            <Card key={i} className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="text-primary">{benefit.icon}</div>
-                <div>
-                  <h3 className="font-semibold mb-1">{benefit.title}</h3>
-                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                </div>
+        {/* Progress */}
+        {step < 4 && (
+          <div className="mb-8 flex gap-2">
+            {[2, 3].map((s) => (
+              <div
+                key={s}
+                className={`h-1 flex-1 ${step >= s ? 'bg-foreground' : 'bg-foreground/15'}`}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="border border-foreground/[0.08] bg-white/70 p-6 text-left md:p-8">
+          {step === 2 && (
+            <div className="space-y-4">
+              <div className="text-left">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/45">
+                  Business name
+                </label>
+                <Input
+                  placeholder="Your store or brand name"
+                  value={application.businessName}
+                  onChange={(e) =>
+                    setApplication({ ...application, businessName: e.target.value })
+                  }
+                  className="h-12"
+                />
               </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Promo */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 text-white text-center mb-10">
-          <h2 className="text-xl font-bold mb-2">Limited Time: 5% Commission</h2>
-          <p className="text-lg mb-2">First 50 vendors get <span className="font-bold">5% commission</span> for 6 months</p>
-          <p className="opacity-90">Avg vendor earns ₦2.5M/month | Top: ₦8.2M</p>
-        </div>
-
-        {/* Single-page form */}
-        <Card>
-          <CardHeader className="text-center">
-            <CardTitle>Vendor Application</CardTitle>
-            <CardDescription>Fill in the essentials — we'll handle the rest</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && <p className="text-red-600 text-sm text-center">{error}</p>}
-
-              <Input
-                placeholder="Business Name *"
-                value={application.businessName}
-                onChange={(e) => handleChange('businessName', e.target.value)}
-                required
-              />
-              <Input
-                placeholder="Email *"
-                type="email"
-                value={application.email}
-                onChange={(e) => handleChange('email', e.target.value)}
-                required
-              />
-              <Input
-                placeholder="Phone Number *"
-                value={application.phone}
-                onChange={(e) => handleChange('phone', e.target.value)}
-                required
-              />
-              <Input
-                placeholder="Instagram Handle"
-                value={application.instagramHandle}
-                onChange={(e) => handleChange('instagramHandle', e.target.value)}
-              />
-              <Textarea
-                placeholder="Describe your business and products *"
-                value={application.description}
-                onChange={(e) => handleChange('description', e.target.value)}
-                rows={4}
-                required
-              />
-
-              <Button type="submit" disabled={loading} className="w-full py-4 text-lg" size="lg">
-                {loading ? 'Submitting...' : 'Submit Application'}
+              <div className="text-left">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/45">
+                  Email
+                </label>
+                <Input
+                  placeholder="you@business.com"
+                  type="email"
+                  value={application.email}
+                  onChange={(e) => setApplication({ ...application, email: e.target.value })}
+                  className="h-12"
+                />
+              </div>
+              <div className="text-left">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/45">
+                  Phone
+                </label>
+                <Input
+                  placeholder="+234..."
+                  value={application.phone}
+                  onChange={(e) => setApplication({ ...application, phone: e.target.value })}
+                  className="h-12"
+                />
+              </div>
+              <div className="text-left">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/45">
+                  About your business
+                </label>
+                <Textarea
+                  placeholder="Describe your products and what you sell"
+                  value={application.description}
+                  onChange={(e) =>
+                    setApplication({ ...application, description: e.target.value })
+                  }
+                  className="min-h-[120px]"
+                />
+              </div>
+              <Button
+                onClick={() => setStep(3)}
+                className="mt-2 h-12 w-full bg-foreground text-sm font-semibold uppercase tracking-[0.12em] text-background hover:bg-foreground/90"
+              >
+                Continue
               </Button>
-            </form>
-          </CardContent>
-        </Card>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-4">
+              <div className="text-left">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/45">
+                  Website (optional)
+                </label>
+                <Input
+                  placeholder="https://"
+                  value={application.website}
+                  onChange={(e) => setApplication({ ...application, website: e.target.value })}
+                  className="h-12"
+                />
+              </div>
+              <div className="text-left">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/45">
+                  Instagram handle
+                </label>
+                <Input
+                  placeholder="@yourstore"
+                  value={application.instagramHandle}
+                  onChange={(e) =>
+                    setApplication({ ...application, instagramHandle: e.target.value })
+                  }
+                  className="h-12"
+                />
+              </div>
+              <div className="text-left">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/45">
+                  Expected monthly volume
+                </label>
+                <select
+                  className="h-12 w-full border border-foreground/15 bg-white px-3 text-sm text-foreground outline-none focus:border-foreground"
+                  value={application.expectedMonthlyVolume}
+                  onChange={(e) =>
+                    setApplication({ ...application, expectedMonthlyVolume: e.target.value })
+                  }
+                >
+                  <option value="">Select range</option>
+                  <option value="0-500k">₦0 – ₦500,000</option>
+                  <option value="500k-2m">₦500,000 – ₦2,000,000</option>
+                  <option value="2m-5m">₦2,000,000 – ₦5,000,000</option>
+                  <option value="5m+">₦5,000,000+</option>
+                </select>
+              </div>
+              <Button
+                onClick={handleSubmit}
+                className="mt-2 h-12 w-full bg-foreground text-sm font-semibold uppercase tracking-[0.12em] text-background hover:bg-foreground/90"
+              >
+                Submit Application
+              </Button>
+            </div>
+          )}
+
+          {step === 4 && (
+            <div className="py-6 text-center">
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center border border-emerald-500/30 bg-emerald-500/10">
+                <Check className="h-7 w-7 text-emerald-700" />
+              </div>
+              <h2 className="mb-3 text-2xl font-black uppercase tracking-tight text-foreground !text-center">
+                Application Submitted
+              </h2>
+              <p className="mx-auto mb-6 max-w-sm text-sm text-foreground/60 !text-center">
+                We&apos;ll review your application and get back to you within 48 hours.
+              </p>
+              <p className="mb-8 text-xs uppercase tracking-[0.16em] text-foreground/40 !text-center">
+                Follow up: vendors@theimpetus.com
+              </p>
+              <Link
+                href="/"
+                className="inline-flex min-h-11 items-center justify-center bg-foreground px-6 text-xs font-semibold uppercase tracking-[0.14em] text-background"
+              >
+                Back to store
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

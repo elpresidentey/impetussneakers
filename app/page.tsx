@@ -86,7 +86,7 @@ export default function Page() {
   const uniqueProducts = dedupeProducts(products).filter(
     (product) => !isTestProductName(product.name)
   )
-  const collectionProducts = ['new-arrivals', 'hottest', 'featured', 'sale'].reduce<Record<string, Product[]>>(
+  const collectionProducts = ['hottest', 'featured', 'sale'].reduce<Record<string, Product[]>>(
     (collections, category) => {
       const claimedIds = new Set(Object.values(collections).flat().map((product) => product.id))
       const categoryMatches = uniqueProducts.filter(
@@ -1075,65 +1075,7 @@ export default function Page() {
                   </span>
                 </div>
               </button>
-
-              {/* Card 4 — Drop Room (12 cols × 1 row, full width) */}
-              <button className="group relative min-h-[250px] overflow-hidden bg-[#1a1714] p-6 text-left text-white md:col-span-12 opacity-0 animate-[fadeIn_0.6s_ease-out_0.55s_forwards]" onClick={() => setFilterCategory('new-arrivals')}>
-                {/* Animated floating number watermark */}
-                <div className="absolute -right-8 -top-8 text-[200px] font-black leading-none text-white/[0.03] animate-floatNumber transition-transform duration-700 group-hover:scale-110 group-hover:text-white/[0.06]">
-                  {uniqueProducts.length || 24}
-                </div>
-                {/* Decorative animated dots */}
-                <div className="absolute right-20 top-8 h-2 w-2 bg-white/[0.06] animate-driftDots" style={{ animationDelay: '0s' }} />
-                <div className="absolute right-40 top-14 h-1.5 w-1.5 bg-white/[0.04] animate-driftDots" style={{ animationDelay: '2s' }} />
-                <div className="absolute bottom-12 right-16 h-1 w-1 bg-white/[0.05] animate-driftDots" style={{ animationDelay: '4s' }} />
-                {/* Subtle ring accent */}
-                <div className="absolute -left-12 -top-12 h-48 w-48 rounded-full border border-white/[0.05] animate-pulseRing" />
-                <div className="absolute -right-6 -bottom-6 h-32 w-32 rounded-full border border-white/[0.04] animate-pulseRing" style={{ animationDelay: '1.5s' }} />
-
-                <div className="relative flex h-full flex-col justify-between sm:flex-row sm:items-end sm:gap-8">
-                  <div>
-                    <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/45">04 / Drop room</p>
-                    <div className="flex items-baseline gap-3">
-                      <p className="text-6xl font-black leading-none transition-all duration-500 group-hover:tracking-tight md:text-7xl">{uniqueProducts.length || 24}</p>
-                      <span className="text-sm font-semibold uppercase tracking-wide text-white/50 transition-colors duration-300 group-hover:text-white/70">pairs</span>
-                    </div>
-                    <h3 className="mt-2 max-w-sm text-2xl font-black uppercase leading-[0.9] transition-colors duration-300 group-hover:text-white md:text-3xl">Heat restocking weekly.</h3>
-                  </div>
-                  <span className="mt-5 inline-flex items-center gap-2 border-b border-white/30 pb-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-white/70 transition-all duration-300 group-hover:border-white/60 group-hover:text-white sm:mt-0 sm:shrink-0">
-                    See arrivals
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1.5" />
-                  </span>
-                </div>
-              </button>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* New Arrivals Section */}
-      <section id="new-arrivals" className="section-pad surface-paper">
-        <div className="max-w-7xl mx-auto">
-          <ScrollReveal direction="up" delay={100}>
-            <div className="mb-10 flex flex-col gap-3 border-b border-foreground/[0.08] pb-6 md:mb-12 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className="section-eyebrow">Collection</p>
-                <h2 className="section-title text-4xl md:text-6xl">
-                  New Arrivals
-                </h2>
-              </div>
-              <p className="section-lede">Just landed. Limited stock.</p>
-            </div>
-          </ScrollReveal>
-          <ScrollReveal direction="up" delay={200}>
-            <div className="grid grid-cols-1 gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-              {collectionProducts['new-arrivals'].map((product) => (
-                <ProductCard
-                  key={product.id}
-                  {...product}
-                  onQuickView={() => setQuickViewProduct(product)}
-                />
-              ))}
-            </div>
+             </div>
           </ScrollReveal>
         </div>
       </section>
@@ -1350,7 +1292,6 @@ export default function Page() {
                   className="h-12 border border-foreground/12 bg-white/80 px-4 text-sm text-foreground outline-none transition-all duration-200 focus:border-foreground hover:border-foreground/30 cursor-pointer"
                 >
                   <option value="all">All Categories</option>
-                  <option value="new-arrivals">New Arrivals</option>
                   <option value="hottest">Hottest Products</option>
                   <option value="featured">Featured</option>
                   <option value="sale">Sale</option>
