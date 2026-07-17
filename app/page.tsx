@@ -1078,28 +1078,30 @@ export default function Page() {
 
               {/* Card 4 — Drop Room (12 cols × 1 row, full width) */}
               <button className="group relative min-h-[250px] overflow-hidden text-left md:col-span-12 opacity-0 animate-[fadeIn_0.6s_ease-out_0.55s_forwards]" onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })}>
+                {/* Stronger dark overlay for contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30" />
                 {/* Animated floating number watermark */}
-                <div className="absolute -right-8 -top-8 text-[200px] font-black leading-none text-white/[0.03] animate-floatNumber transition-transform duration-700 group-hover:scale-110 group-hover:text-white/[0.06]">
+                <div className="absolute -right-8 -top-8 text-[200px] font-black leading-none text-white/[0.04] animate-floatNumber transition-transform duration-700 group-hover:scale-110 group-hover:text-white/[0.08]">
                   {uniqueProducts.length || 24}
                 </div>
                 {/* Decorative animated dots */}
-                <div className="absolute right-20 top-8 h-2 w-2 bg-white/[0.06] animate-driftDots" style={{ animationDelay: '0s' }} />
-                <div className="absolute right-40 top-14 h-1.5 w-1.5 bg-white/[0.04] animate-driftDots" style={{ animationDelay: '2s' }} />
-                <div className="absolute bottom-12 right-16 h-1 w-1 bg-white/[0.05] animate-driftDots" style={{ animationDelay: '4s' }} />
+                <div className="absolute right-20 top-8 h-2 w-2 bg-white/[0.08] animate-driftDots" style={{ animationDelay: '0s' }} />
+                <div className="absolute right-40 top-14 h-1.5 w-1.5 bg-white/[0.06] animate-driftDots" style={{ animationDelay: '2s' }} />
+                <div className="absolute bottom-12 right-16 h-1 w-1 bg-white/[0.06] animate-driftDots" style={{ animationDelay: '4s' }} />
                 {/* Subtle ring accent */}
-                <div className="absolute -left-12 -top-12 h-48 w-48 rounded-full border border-white/[0.05] animate-pulseRing" />
-                <div className="absolute -right-6 -bottom-6 h-32 w-32 rounded-full border border-white/[0.04] animate-pulseRing" style={{ animationDelay: '1.5s' }} />
+                <div className="absolute -left-12 -top-12 h-48 w-48 rounded-full border border-white/[0.08] animate-pulseRing" />
+                <div className="absolute -right-6 -bottom-6 h-32 w-32 rounded-full border border-white/[0.06] animate-pulseRing" style={{ animationDelay: '1.5s' }} />
 
                 <div className="relative flex h-full flex-col justify-between sm:flex-row sm:items-end sm:gap-8">
                   <div>
-                    <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/45">04 / Drop room</p>
+                    <p className="mb-4 text-[10px] font-semibold uppercase tracking-[0.3em] text-white/70">04 / Drop room</p>
                     <div className="flex items-baseline gap-3">
-                      <p className="text-6xl font-black leading-none transition-all duration-500 group-hover:tracking-tight md:text-7xl">{uniqueProducts.length || 24}</p>
-                      <span className="text-sm font-semibold uppercase tracking-wide text-white/50 transition-colors duration-300 group-hover:text-white/70">pairs</span>
+                      <p className="text-6xl font-black leading-none transition-all duration-500 group-hover:tracking-tight md:text-7xl text-white">{uniqueProducts.length || 24}</p>
+                      <span className="text-sm font-semibold uppercase tracking-wide text-white/80 transition-colors duration-300 group-hover:text-white">pairs</span>
                     </div>
-                    <h3 className="mt-2 max-w-sm text-2xl font-black uppercase leading-[0.9] transition-colors duration-300 group-hover:text-white md:text-3xl">Fresh drops weekly.</h3>
+                    <h3 className="mt-2 max-w-sm text-2xl font-black uppercase leading-[0.9] transition-colors duration-300 group-hover:text-white md:text-3xl text-white">Fresh drops weekly.</h3>
                   </div>
-                  <span className="mt-5 inline-flex items-center gap-2 border-b border-white/30 pb-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-white/70 transition-all duration-300 group-hover:border-white/60 group-hover:text-white sm:mt-0 sm:shrink-0">
+                  <span className="mt-5 inline-flex items-center gap-2 border-b border-white/50 pb-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 group-hover:border-white group-hover:text-white sm:mt-0 sm:shrink-0">
                     See drops
                     <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1.5" />
                   </span>
