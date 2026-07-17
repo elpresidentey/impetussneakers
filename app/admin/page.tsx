@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { Package, Users, DollarSign, ShoppingCart, ShieldAlert, Plus, Home, Edit, Trash2, Search, ArrowLeft, X, AlertCircle, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useRouter } from 'next/navigation'
@@ -602,13 +603,12 @@ export default function AdminPage() {
                       <div key={product.id} className="bg-card rounded-xl overflow-hidden border border-foreground/10 hover:border-foreground/20 transition-all group">
                         {/* Product Image */}
                         <div className="relative h-48 bg-foreground/5 overflow-hidden">
-                          <img
+                          <Image
                             src={product.image}
                             alt={product.alt}
-                            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/placeholder.webp'
-                            }}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-contain group-hover:scale-110 transition-transform duration-300"
                           />
                           <div className="absolute top-2 right-2 flex gap-2">
                             <span className={`px-2 py-1 rounded-lg text-xs font-bold ${
