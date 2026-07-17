@@ -64,6 +64,7 @@ export function ProductCard({
 
   return (
     <article
+      data-testid="product-card"
       className="group flex h-full cursor-pointer flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]"
       onClick={handleQuickView}
     >
