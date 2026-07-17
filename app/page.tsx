@@ -1057,8 +1057,8 @@ export default function Page() {
                 </div>
               </button>
 
-              {/* Card 3 — Trending (5 cols × 1 row, sits below Studio) */}
-              <button className="group relative min-h-[250px] overflow-hidden text-left md:col-span-5 opacity-0 animate-[fadeIn_0.6s_ease-out_0.4s_forwards]" onClick={() => document.getElementById('hottest')?.scrollIntoView({ behavior: 'smooth' })}>
+{/* Card 3 — Trending (full width, own row) */}
+              <button className="group relative min-h-[250px] overflow-hidden text-left md:col-span-12 opacity-0 animate-[fadeIn_0.6s_ease-out_0.4s_forwards]" onClick={() => document.getElementById('hottest')?.scrollIntoView({ behavior: 'smooth' })}>
                 <Image
                   src={bentoCard3Images[bentoCardIndex[2] % bentoCard3Images.length].src}
                   alt={bentoCard3Images[bentoCardIndex[2] % bentoCard3Images.length].alt}
@@ -1075,7 +1075,7 @@ export default function Page() {
                   </span>
                 </div>
               </button>
-             </div>
+            </div>
           </ScrollReveal>
         </div>
       </section>
