@@ -1734,7 +1734,6 @@ export default function Page() {
                 <ul className="space-y-3">
                   <li><Link href="/#shop" className="text-sm text-white/65 transition-colors hover:text-white">All Products</Link></li>
                   <li><Link href="/#collections" className="text-sm text-white/65 transition-colors hover:text-white">Collections</Link></li>
-                  <li><Link href="/#new-arrivals" className="text-sm text-white/65 transition-colors hover:text-white">New Arrivals</Link></li>
                   <li><Link href="/#sale" className="text-sm text-white/65 transition-colors hover:text-white">Sale</Link></li>
                   <li><a href="/orders" className="text-sm text-white/65 transition-colors hover:text-white">Track Order</a></li>
                 </ul>
