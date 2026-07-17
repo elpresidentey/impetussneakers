@@ -14,7 +14,6 @@ import { SkeletonCard } from '@/components/skeleton-card'
 import { AuthModal } from '@/components/auth-modal'
 import { ScrollReveal } from '@/components/scroll-reveal'
 import { PageTransition } from '@/components/page-transition'
-import { DesignerCarousel } from '@/components/designer-carousel'
 import { useCart } from '@/contexts/cart-context'
 import { useAuth } from '@/contexts/auth-context'
 import { isTestProductName } from '@/lib/catalog'
@@ -908,6 +907,11 @@ export default function Page() {
         />
         <Header onSearchOpen={() => setIsSearchOpen(true)} onCartOpen={() => setIsCartOpen(true)} onAuthOpen={() => setIsAuthOpen(true)} />
 
+      {/* Preload hero images for LCP */}
+      <link rel="preload" as="image" href="/hero-sneaker-ledge.jpg" />
+      <link rel="preload" as="image" href="/hero-sneaker-studio.jpg" />
+      <link rel="preload" as="image" href="/hero-sneaker-monochrome.jpg" />
+
       {/* Hero Section */}
       <section className="relative min-h-[92vh] overflow-hidden bg-black text-white noise-overlay md:min-h-[96vh]">
         {heroImages.map((image, index) => (
@@ -1708,9 +1712,6 @@ export default function Page() {
           </div>
         </div>
       </section>
-
-      {/* Designer Carousel */}
-      <DesignerCarousel />
 
       {/* Footer */}
       <footer className="border-t border-white/10 bg-[var(--surface-ink)] px-4 py-12 text-white md:px-8 md:py-16">
