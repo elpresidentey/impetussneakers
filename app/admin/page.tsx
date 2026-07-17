@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { Package, Users, DollarSign, ShoppingCart, ShieldAlert, Plus, Home, Edit, Trash2, Search, ArrowLeft, X, Save, AlertCircle, CheckCircle } from 'lucide-react'
+import { Package, Users, DollarSign, ShoppingCart, ShieldAlert, Plus, Home, Edit, Trash2, Search, ArrowLeft, X, AlertCircle, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useRouter } from 'next/navigation'
 import { AdminProductForm } from '@/components/admin-product-form'
 import { createClient } from '@/lib/supabase/client'
 import { isAdminUser } from '@/lib/admin'
+import { Product, Order, Notification } from '@/lib/types'
 
 type ViewMode = 'dashboard' | 'products' | 'orders' | 'add-product' | 'edit-product'
 
@@ -22,14 +23,20 @@ export default function AdminPage() {
   })
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
-  const [products, setProducts] = useState<any[]>([])
-  const [orders, setOrders] = useState<any[]>([])
+  const [products, setProducts] = useState<Product[]>([])
+  const [orders, setOrders] = useState<Order[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [editingProduct, setEditingProduct] = useState<any>(null)
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
+  const [notification, setNotification] = useState<Notification | null>(null)
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null)
+
+  const getAuthToken = useCallback(async () => {
+    const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    return session?.access_token || ''
+  }, [])
 
   const fetchStats = useCallback(async () => {
     try {
@@ -46,7 +53,7 @@ export default function AdminPage() {
 
       if (ordersRes.ok) {
         const orders = await ordersRes.json()
-        const totalRevenue = orders.reduce((sum: number, order: any) => sum + (order.total_amount || 0), 0)
+        const totalRevenue = orders.reduce((sum: number, order: Order) => sum + (order.total_amount || 0), 0)
         setStats(prev => ({
           ...prev,
           totalOrders: orders.length,
@@ -68,7 +75,7 @@ export default function AdminPage() {
     } finally {
       setLoading(false)
     }
-  }, [user])
+  }, [user, getAuthToken])
 
   useEffect(() => {
     if (!user) {
@@ -90,12 +97,6 @@ export default function AdminPage() {
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message })
     setTimeout(() => setNotification(null), 5000)
-  }
-
-  const getAuthToken = async () => {
-    const supabase = createClient()
-    const { data: { session } } = await supabase.auth.getSession()
-    return session?.access_token || ''
   }
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -192,12 +193,12 @@ export default function AdminPage() {
     await forceDeleteProduct(productId, false)
   }
 
-  const handleEditProduct = (product: any) => {
+  const handleEditProduct = (product: Product) => {
     setEditingProduct(product)
     setViewMode('edit-product')
   }
 
-  const handleProductSubmit = async (formData: any) => {
+  const handleProductSubmit = async (formData: Record<string, string>) => {
     setIsSubmitting(true)
     try {
       const sizesArray = formData.sizes.split(',').map((s: string) => s.trim()).filter((s: string) => s)

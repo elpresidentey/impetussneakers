@@ -908,9 +908,11 @@ export default function Page() {
         <Header onSearchOpen={() => setIsSearchOpen(true)} onCartOpen={() => setIsCartOpen(true)} onAuthOpen={() => setIsAuthOpen(true)} />
 
       {/* Preload hero images for LCP */}
-      <link rel="preload" as="image" href="/hero-sneaker-ledge.jpg" />
+      <link rel="preload" as="image" href="/hero-sneaker-ledge.jpg" fetchpriority="high" />
       <link rel="preload" as="image" href="/hero-sneaker-studio.jpg" />
       <link rel="preload" as="image" href="/hero-sneaker-monochrome.jpg" />
+      <link rel="preload" as="image" href="/artiom-vallat-CHKaD8uRaDU-unsplash.jpg" />
+      <link rel="preload" as="image" href="/everysize-dih2AY_9EAY-unsplash.jpg" />
 
       {/* Hero Section */}
       <section className="relative min-h-[92vh] overflow-hidden bg-black text-white noise-overlay md:min-h-[96vh]">
@@ -920,11 +922,13 @@ export default function Page() {
             src={image.src}
             alt={image.alt}
             fill
+            sizes="100vw"
             className={`object-cover ${image.position} transition-all duration-[1600ms] ease-out ${
               index === currentImageIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.04]'
             }`}
             priority={index === 0}
             loading={index === 0 ? 'eager' : 'lazy'}
+            fetchPriority={index === 0 ? 'high' : 'low'}
           />
         ))}
         <div className="absolute inset-0 bg-black/35" />

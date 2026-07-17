@@ -34,7 +34,15 @@ const nextConfig = {
   // Enable compression
   compress: true,
   
+  // Performance optimizations
+  experimental: {
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
+  
   // Production optimizations
+  poweredByHeader: false,
+  reactStrictMode: true,
+  swcMinify: true,
   
   // Security headers
   async headers() {
@@ -54,14 +62,23 @@ const nextConfig = {
             key: 'Content-Security-Policy',
             value: [
               "default-src 'self'",
-              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.supabase.co",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.supabase.co https://vercel.live",
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: https: blob:",
               "font-src 'self' data:",
-              "connect-src 'self' https://*.supabase.co https://api.paystack.co wss://*.supabase.co",
+              "connect-src 'self' https://*.supabase.co https://api.paystack.co wss://*.supabase.co https://vitals.vercel-insights.com",
               "frame-src 'self' https://js.paystack.co",
               "worker-src 'self' blob:",
             ].join('; ')
+          }
+        ],
+      },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Preload',
+            value: '/hero-sneaker-ledge.jpg; as=image; rel=preload; fetchpriority=high'
           }
         ],
       },

@@ -158,7 +158,7 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
 
             {product.colors && product.colors.length > 0 && (
               <div>
-                <p className="text-sm font-semibold text-foreground mb-3">Select Color</p>
+                <p className="text-sm font-semibold text-foreground mb-3">Colorways</p>
                 <div className="flex flex-wrap gap-2">
                   {product.colors.map((color) => (
                     <button
