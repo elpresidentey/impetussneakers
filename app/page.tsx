@@ -14,6 +14,7 @@ import { SkeletonCard } from '@/components/skeleton-card'
 import { AuthModal } from '@/components/auth-modal'
 import { ScrollReveal } from '@/components/scroll-reveal'
 import { PageTransition } from '@/components/page-transition'
+import { DesignerCarousel } from '@/components/designer-carousel'
 import { useCart } from '@/contexts/cart-context'
 import { useAuth } from '@/contexts/auth-context'
 import { isTestProductName } from '@/lib/catalog'
@@ -1707,6 +1708,9 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      {/* Designer Carousel */}
+      <DesignerCarousel />
 
       {/* Footer */}
       <footer className="border-t border-white/10 bg-[var(--surface-ink)] px-4 py-12 text-white md:px-8 md:py-16">

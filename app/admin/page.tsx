@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Package, Users, DollarSign, ShoppingCart, ShieldAlert, Plus, Home, Edit, Trash2, Search, ArrowLeft, X, Save, AlertCircle, CheckCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useRouter } from 'next/navigation'
@@ -31,26 +31,9 @@ export default function AdminPage() {
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null)
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null)
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth/login')
-      return
-    }
-    
-    const isUserAdmin = isAdminUser(user)
-    
-    if (!isUserAdmin) {
-      router.push('/dashboard')
-      return
-    }
-    
-    setIsAdmin(true)
-    fetchStats()
-  }, [user, router])
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
-        const token = await getAuthToken()
+      const token = await getAuthToken()
       const [ordersRes, productsRes] = await Promise.all([
         fetch('/api/admin/orders', {
           headers: {
@@ -81,12 +64,28 @@ export default function AdminPage() {
         setProducts(products)
       }
     } catch (error) {
-      console.error('Failed to fetch admin stats:', error)
-      showNotification('error', 'Failed to load dashboard data')
+      console.error('Failed to fetch stats:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/auth/login')
+      return
+    }
+    
+    const isUserAdmin = isAdminUser(user)
+    
+    if (!isUserAdmin) {
+      router.push('/dashboard')
+      return
+    }
+    
+    setIsAdmin(true)
+    fetchStats()
+  }, [user, router, fetchStats])
 
   const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message })
