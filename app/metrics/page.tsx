@@ -158,29 +158,6 @@ export default function MetricsPage() {
     )
   }
 
-  if (!metrics) {
-            <Badge variant={change >= 0 ? "default" : "destructive"} className="flex items-center gap-1">
-              {change >= 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-              {Math.abs(change)}%
-            </Badge>
-          )}
-        </div>
-        <div className="space-y-2">
-          <h3 className="text-2xl font-bold">
-            {prefix}{typeof value === 'number' ? value.toLocaleString() : value}{suffix}
-          </h3>
-          <p className="text-sm text-muted-foreground">{title}</p>
-          {target && (
-            <div className="flex items-center gap-2 text-xs">
-              <Target className="w-3 h-3" />
-              Target: {prefix}{target.toLocaleString()}{suffix}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  )
-
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto">
