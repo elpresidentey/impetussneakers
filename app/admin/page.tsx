@@ -91,8 +91,13 @@ export default function AdminPage() {
       return
     }
     
-    setIsAdmin(true)
-    fetchStats()
+    // Use a timeout to avoid synchronous setState in effect
+    const timer = setTimeout(() => {
+      setIsAdmin(true)
+      fetchStats()
+    }, 0)
+    
+    return () => clearTimeout(timer)
   }, [user, router, fetchStats])
 
   const showNotification = (type: 'success' | 'error', message: string) => {

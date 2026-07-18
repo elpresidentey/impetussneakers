@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
@@ -54,16 +54,74 @@ interface MetricsData {
   customerSatisfaction: number
 }
 
+interface MetricCardProps {
+  title: string
+  value: number
+  change?: number
+  prefix?: string
+  suffix?: string
+  icon?: React.ReactNode
+  target?: number
+}
+
+function MetricCard({ 
+  title, 
+  value, 
+  change, 
+  prefix = '', 
+  suffix = '', 
+  icon, 
+  target 
+}: MetricCardProps) {
+  const percentToTarget = target ? Math.min((value / target) * 100, 100) : 0
+  const isGood = change !== undefined ? change >= 0 : true
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-medium text-foreground/70">{title}</CardTitle>
+          {icon && <span className="text-foreground/40">{icon}</span>}
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="text-3xl font-bold text-foreground">
+          {prefix}{value.toLocaleString()}{suffix}
+        </div>
+        {change !== undefined && (
+          <div className="flex items-center gap-2 mt-2">
+            <Badge variant={isGood ? 'default' : 'destructive'} className="text-xs">
+              {isGood ? <ArrowUp className="w-3 h-3 mr-1" /> : <ArrowDown className="w-3 h-3 mr-1" />}
+              {Math.abs(change).toFixed(1)}%
+            </Badge>
+            <span className="text-xs text-foreground/50">vs last period</span>
+          </div>
+        )}
+        {target && (
+          <div className="mt-3">
+            <div className="flex justify-between text-xs text-foreground/50 mb-1">
+              <span>Target: {prefix}{target.toLocaleString()}{suffix}</span>
+              <span>{percentToTarget.toFixed(0)}%</span>
+            </div>
+            <div className="h-2 bg-foreground/10 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-green-500 to-blue-500 transition-all duration-500" 
+                style={{ width: `${percentToTarget}%` }}
+              />
+            </div>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
 export default function MetricsPage() {
   const [metrics, setMetrics] = useState<MetricsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [timeframe, setTimeframe] = useState('30d')
 
-  useEffect(() => {
-    fetchMetrics()
-  }, [timeframe])
-
-  const fetchMetrics = async () => {
+  const fetchMetrics = useCallback(async () => {
     try {
       const response = await fetch(`/api/analytics/business-metrics?timeframe=${timeframe}`)
       if (response.ok) {
@@ -75,7 +133,11 @@ export default function MetricsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [timeframe])
+
+  useEffect(() => {
+    fetchMetrics()
+  }, [fetchMetrics])
 
   if (loading) {
     return (
@@ -96,30 +158,7 @@ export default function MetricsPage() {
     )
   }
 
-  const MetricCard = ({ 
-    title, 
-    value, 
-    change, 
-    icon, 
-    prefix = '', 
-    suffix = '',
-    target,
-    isGood = true 
-  }: {
-    title: string
-    value: number | string
-    change?: number
-    icon: React.ReactNode
-    prefix?: string
-    suffix?: string
-    target?: number
-    isGood?: boolean
-  }) => (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-muted-foreground">{icon}</div>
-          {change !== undefined && (
+  if (!metrics) {
             <Badge variant={change >= 0 ? "default" : "destructive"} className="flex items-center gap-1">
               {change >= 0 ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
               {Math.abs(change)}%

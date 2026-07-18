@@ -7,13 +7,13 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { email } = body
 
-    // Check if already subscribed
-    const { data: existing, error: checkError } = await supabase
-      .from('newsletter_subscriptions')
-      .select('*')
-      .eq('email', email)
-      .is('unsubscribed_at', null)
-      .single()
+// Check if already subscribed
+  const { data: existing } = await supabase
+    .from('newsletter_subscriptions')
+    .select('*')
+    .eq('email', email)
+    .is('unsubscribed_at', null)
+    .single()
 
     if (existing) {
       return NextResponse.json(

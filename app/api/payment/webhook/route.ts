@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
     // Handle payment success event
     if (event.event === 'charge.success') {
-      const { reference, metadata, amount, paid_at } = event.data
+      const { reference, metadata } = event.data
 
       // Update order with payment status
       const { error } = await supabase

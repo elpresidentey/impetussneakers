@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     
     const adminEmails = process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'admin@theimpetus.com'
     
-    const user = await requireAdminAuth(request as any)
+    const user = await requireAdminAuth(request)
     
     return NextResponse.json({
       isAdmin: !!user,

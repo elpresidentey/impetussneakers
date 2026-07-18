@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server'
-import crypto from 'crypto'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || ''
-const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || ''
 
 export async function POST(request: Request) {
   try {

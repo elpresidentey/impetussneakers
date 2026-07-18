@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/db'
 import { requireAdminAuth } from '@/lib/auth'
+import { Product } from '@/lib/types'
+
+interface DuplicateGroup {
+  name: string
+  count: number
+  items: { id: number; price: number; stock: number }[]
+}
 
 export async function POST(request: Request) {
   // Admin auth required
-  const user = await requireAdminAuth(request as any)
+  const user = await requireAdminAuth(request)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -27,8 +34,8 @@ export async function POST(request: Request) {
     }
 
     // Group products by name
-    const productGroups = new Map<string, any[]>()
-    
+const productGroups = new Map<string, Product[]>()
+
     for (const product of products) {
       const key = product.name.toLowerCase().trim()
       if (!productGroups.has(key)) {
@@ -38,8 +45,8 @@ export async function POST(request: Request) {
     }
 
     // Find duplicates
-    const duplicates: any[] = []
-    const duplicateGroups: any[] = []
+    const duplicates: Product[] = []
+    const duplicateGroups: DuplicateGroup[] = []
     
     for (const [name, items] of productGroups.entries()) {
       if (items.length > 1) {

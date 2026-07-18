@@ -7,12 +7,12 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { email, password, first_name, last_name, phone } = body
 
-    // Check if user already exists
-    const { data: existingUser, error: checkError } = await supabase
-      .from('users')
-      .select('id')
-      .eq('email', email)
-      .single()
+// Check if user already exists
+  const { data: existingUser } = await supabase
+    .from('users')
+    .select('id')
+    .eq('email', email)
+    .single()
 
     if (existingUser) {
       return NextResponse.json(

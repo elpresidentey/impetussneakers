@@ -5,8 +5,8 @@
 type AdminUserLike = string | null | undefined | {
   email?: string | null
   role?: string | null
-  user_metadata?: Record<string, any> | null
-  app_metadata?: Record<string, any> | null
+  user_metadata?: Record<string, unknown> | null
+  app_metadata?: Record<string, unknown> | null
 }
 
 export function isAdminUser(user: AdminUserLike): boolean {

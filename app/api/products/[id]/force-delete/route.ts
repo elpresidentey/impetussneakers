@@ -25,7 +25,7 @@ export async function DELETE(
   }
 
   // Admin auth required
-  const user = await requireAdminAuth(request as any)
+  const user = await requireAdminAuth(request)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

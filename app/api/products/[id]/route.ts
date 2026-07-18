@@ -9,8 +9,8 @@ function normalizeId(id: string) {
   return Number.isNaN(numericId) ? trimmedId : numericId
 }
 
-function buildProductPayload(validatedData: any) {
-  const payload: any = {
+function buildProductPayload(validatedData: Record<string, unknown>) {
+  const payload: Record<string, unknown> = {
     name: validatedData.name,
     description: validatedData.description,
     price: validatedData.price,
@@ -87,7 +87,7 @@ export async function PUT(
   }
 
   // Admin auth required
-  const user = await requireAdminAuth(request as any)
+  const user = await requireAdminAuth(request)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
@@ -182,7 +182,7 @@ export async function DELETE(
   }
 
   // Admin auth required
-  const user = await requireAdminAuth(request as any)
+  const user = await requireAdminAuth(request)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

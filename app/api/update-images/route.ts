@@ -43,7 +43,7 @@ export async function POST() {
       success: true, 
       results 
     })
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { error: 'Failed to update images' },
       { status: 500 }

@@ -4,8 +4,8 @@ import { requireAdminAuth } from '@/lib/auth'
 import { validateInput, createProductSchema, rateLimit } from '@/lib/validation'
 import { isTestProductName } from '@/lib/catalog'
 
-function buildProductPayload(validatedData: any) {
-  const payload: any = {
+function buildProductPayload(validatedData: Record<string, unknown>) {
+  const payload: Record<string, unknown> = {
     name: validatedData.name,
     description: validatedData.description,
     price: validatedData.price,
@@ -41,7 +41,7 @@ export async function GET() {
     }
 
     // Transform database fields to match frontend expectations
-    const transformedProducts = products.map((product: any) => ({
+    const transformedProducts = products.map((product: Record<string, unknown>) => ({
       id: product.id,
       name: product.name,
       description: product.description,
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
 
-  const user = await requireAdminAuth(request as any)
+  const user = await requireAdminAuth(request)
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }

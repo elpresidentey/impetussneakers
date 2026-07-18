@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/db'
 import { sendOrderConfirmationEmail } from '@/lib/email'
+import { OrderItem } from '@/lib/types'
 
 export async function POST(request: Request) {
   try {
@@ -18,14 +19,14 @@ export async function POST(request: Request) {
     console.log('Received order request:', { user_id, items_count: items?.length })
 
     // Calculate subtotal
-    const subtotal = items.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0)
+    const subtotal = (items as OrderItem[]).reduce((sum: number, item: OrderItem) => sum + (item.price * item.quantity), 0)
     const total_amount = subtotal + shipping_cost + tax_amount
 
     // Generate order number
     const order_number = `IMP-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
 
     // Create order - NEVER include user_id to avoid UUID/bigint issues
-    const orderData: any = {
+    const orderData: Record<string, unknown> = {
       order_number,
       subtotal,
       shipping_cost,

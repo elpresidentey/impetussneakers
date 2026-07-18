@@ -5,13 +5,13 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+import { User } from '@supabase/supabase-js'
+
 export default function CheckoutPage() {
-  const router = useRouter()
   const { cartItems, cartTotal, clearCart, isHydrated } = useCart()
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [formData, setFormData] = useState({
     email: '',

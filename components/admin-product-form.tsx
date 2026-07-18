@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { X, ImageIcon, Tag, Palette, Ruler, Star, Box, Info, Eye, ChevronRight, Upload, Check, Package } from 'lucide-react'
+import { X, ImageIcon, Tag, Palette, Ruler, Star, Box, Info, Eye, ChevronRight, Check, Package } from 'lucide-react'
 import { ImageUpload } from './image-upload'
 
+import { Product } from '@/lib/types'
+
 interface ProductFormProps {
-  product?: any
-  onSubmit: (product: any) => Promise<void>
+  product?: Product
+  onSubmit: (product: Partial<Product>) => Promise<void>
   onCancel: () => void
   isSubmitting: boolean
 }
