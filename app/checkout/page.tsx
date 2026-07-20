@@ -18,6 +18,8 @@ export default function CheckoutPage() {
     address: '',
     phone: '',
   })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [formTouched, setFormTouched] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     const getUser = async () => {
@@ -68,37 +70,79 @@ export default function CheckoutPage() {
       ...prev,
       [name]: value,
     }))
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }))
+    }
+  }
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFormTouched(prev => ({ ...prev, [e.target.name]: true }))
+    validateField(e.target.name, e.target.value)
+  }
+
+  const validateField = (name: string, value: string) => {
+    let error = ''
+    switch (name) {
+      case 'email':
+        if (!value) error = 'Email is required'
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Invalid email format'
+        break
+      case 'address':
+        if (!value) error = 'Delivery address is required'
+        else if (value.trim().length < 10) error = 'Please enter a complete address'
+        break
+      case 'phone':
+        if (!value) error = 'Phone number is required'
+        else {
+          // Nigerian phone number validation
+          const phoneRegex = /^(\+234|0)(70|71|80|81|90|91)[0-9]{8}$/
+          if (!phoneRegex.test(value.replace(/\s/g, ''))) {
+            error = 'Enter a valid Nigerian phone number (e.g., 08012345678)'
+          }
+        }
+        break
+    }
+    setErrors(prev => ({ ...prev, [name]: error }))
+  }
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+    let isValid = true
+    
+    ;['email', 'address', 'phone'].forEach(field => {
+      validateField(field, formData[field])
+      if (errors[field]) isValid = false
+    })
+    
+    return isValid
   }
 
   const handleCheckout = async () => {
-    if (!formData.email || !formData.address || !formData.phone) {
-      alert('Please fill in all fields')
+    setFormTouched({ email: true, address: true, phone: true })
+    
+    if (!validateForm()) {
       return
     }
 
-    setIsProcessing(true)
+    if (!formData.email || !formData.address || !formData.phone) {
+      return
+    }
 
+    // Check if cart has invalid items (UUIDs instead of numbers)
+    const hasInvalidItems = cartItems.some(item => {
+      const id = parseInt(String(item.id))
+      return isNaN(id)
+    })
+
+    if (hasInvalidItems) {
+      console.error('Cart contains items with invalid IDs (UUIDs). Clearing cart.')
+      clearCart()
+      throw new Error('Your cart contains invalid items. The cart has been cleared. Please add items again.')
+    }
+
+    // Step 1: Create order first
     try {
-      const shippingCost = 2000
-      const taxAmount = Math.round(cartTotal * 0.05)
-      const totalAmount = cartTotal + shippingCost + taxAmount
-
-      console.log('Cart items:', cartItems)
-      console.log('User:', user)
-
-      // Check if cart has invalid items (UUIDs instead of numbers)
-      const hasInvalidItems = cartItems.some(item => {
-        const id = parseInt(String(item.id))
-        return isNaN(id)
-      })
-
-      if (hasInvalidItems) {
-        console.error('Cart contains items with invalid IDs (UUIDs). Clearing cart.')
-        clearCart()
-        throw new Error('Your cart contains invalid items. The cart has been cleared. Please add items again.')
-      }
-
-      // Step 1: Create order first
       const orderPayload = {
         user_id: user?.id || null, // Allow null for guest checkout
         items: cartItems.map((item) => {
@@ -134,8 +178,8 @@ export default function CheckoutPage() {
       })
       
       if (!orderResponse.ok) {
-        const error = await orderResponse.json()
-        throw new Error(error.error || 'Failed to create order')
+        const orderError = await orderResponse.json()
+        throw new Error(orderError.error || 'Failed to create order')
       }
 
       const orderData = await orderResponse.json()
@@ -158,8 +202,8 @@ export default function CheckoutPage() {
       })
 
       if (!paymentResponse.ok) {
-        const error = await paymentResponse.json()
-        throw new Error(error.error || 'Failed to initialize payment')
+        const paymentError = await paymentResponse.json()
+        throw new Error(paymentError.error || 'Failed to initialize payment')
       }
 
       const paymentData = await paymentResponse.json()
