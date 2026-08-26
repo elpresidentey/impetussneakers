@@ -13,9 +13,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   
-  // Enable image optimization for better performance
+  // Serve images directly - Vercel image optimizer quota exhausted (402)
   images: {
-    unoptimized: false,
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
