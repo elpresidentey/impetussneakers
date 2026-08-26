@@ -1,5 +1,13 @@
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url))
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbopack: {
+    root: rootDir,
+  },
   // Enable TypeScript checking in production
   typescript: {
     ignoreBuildErrors: true,
@@ -42,7 +50,6 @@ const nextConfig = {
   // Production optimizations
   poweredByHeader: false,
   reactStrictMode: true,
-  swcMinify: true,
   
   // Security headers
   async headers() {

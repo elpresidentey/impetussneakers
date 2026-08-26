@@ -64,6 +64,7 @@ function dedupeProducts(products: Product[]): Product[] {
 
 export default function Page() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [experienceIndex, setExperienceIndex] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
   const [email, setEmail] = useState('')
   const [isSubscribed, setIsSubscribed] = useState(false)
@@ -208,6 +209,13 @@ export default function Page() {
   const bentoCard1Images = heroImages.slice(0, 4)
   const bentoCard2Images = heroImages.slice(4, 8)
   const bentoCard3Images = heroImages.slice(8, 13)
+
+  const beyondExperienceImages = [
+    { src: 'https://hebbkx1anhila5yf.public.blob.vercel-storage.com/diego-jaramillo-W4swGaKFHVQ-unsplash-eweOcZZ12tk00zydKVwmN14tnD2Nae.jpg', alt: 'Showroom Experience', position: 'object-center' },
+    { src: '/beyond-sneaker-detail.jpg', alt: 'Selective color sneaker detail - red and black Jordans', position: 'object-center' },
+    { src: '/beyond-sneaker-wall.jpg', alt: 'Curated wall of premium sneaker collection', position: 'object-center' },
+    { src: '/beyond-colorful-dunks.jpg', alt: 'Colorful Nike Dunk collection editorial with vibrant laces', position: 'object-center' },
+  ]
 
   useEffect(() => {
     setIsLoaded(true)
@@ -871,6 +879,13 @@ export default function Page() {
     return () => intervals.forEach(clearInterval)
   }, [])
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setExperienceIndex((prev) => (prev + 1) % beyondExperienceImages.length)
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [beyondExperienceImages.length])
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -1393,23 +1408,48 @@ export default function Page() {
             </div>
           </ScrollReveal>
 
-          {/* Gallery Image */}
+          {/* Gallery Image - Carousel (auto-rotates like hero, 5s interval) */}
           <ScrollReveal direction="up" delay={100}>
-            <div className="group relative aspect-video cursor-pointer overflow-hidden border border-foreground/10 shadow-[0_24px_80px_rgba(20,16,12,0.12)] md:aspect-[16/9]">
-              <Image
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/diego-jaramillo-W4swGaKFHVQ-unsplash-eweOcZZ12tk00zydKVwmN14tnD2Nae.jpg"
-                alt="Showroom Experience"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/85 via-black/25 to-transparent p-8 md:p-12">
-                <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60">Flagship</p>
-                <h3 className="mb-3 max-w-xl text-2xl font-black uppercase leading-none tracking-tight text-white md:text-4xl">
-                  Crafted for Collectors
-                </h3>
-                <p className="max-w-xl text-sm text-white/80 md:text-base">
-                  Every detail intentional. Every drop meaningful. This is sneaker retail elevated.
-                </p>
+            <div className="group relative aspect-video overflow-hidden border border-foreground/10 shadow-[0_24px_80px_rgba(20,16,12,0.12)] md:aspect-[16/9]">
+              {beyondExperienceImages.map((image, index) => (
+                <Image
+                  key={image.src}
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 1280px"
+                  className={`object-cover ${image.position} transition-all duration-[1600ms] ease-out ${
+                    index === experienceIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-[1.04]'
+                  }`}
+                  priority={index === 0}
+                />
+              ))}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
+                <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/60">Flagship</p>
+                    <h3 className="mb-3 max-w-xl text-2xl font-black uppercase leading-none tracking-tight text-white md:text-4xl">
+                      Crafted for Collectors
+                    </h3>
+                    <p className="max-w-xl text-sm text-white/80 md:text-base">
+                      Every detail intentional. Every drop meaningful. This is sneaker retail elevated.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 self-start md:self-auto md:pb-2">
+                    {beyondExperienceImages.map((_, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        aria-label={`Show experience image ${index + 1}`}
+                        onClick={() => setExperienceIndex(index)}
+                        className={`h-1 transition-all duration-300 ${
+                          index === experienceIndex ? 'w-8 bg-white' : 'w-4 bg-white/40 hover:bg-white/70'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </ScrollReveal>
