@@ -1,0 +1,16 @@
+{
+  "projectId": "prj_ALoH2LXBPJ1u1YiUsdAZOOdxrxzV",
+  "orgId": "team_wAThCQTgoezuxe4HSUq6dsDj",
+  "projectName": "impetus",
+  "settings": {
+    "createdAt": 1783484317285,
+    "framework": "nextjs",
+    "devCommand": null,
+    "installCommand": null,
+    "buildCommand": null,
+    "outputDirectory": null,
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}
