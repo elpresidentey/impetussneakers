@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/db'
 import { requireAdminAuth } from '@/lib/auth'
 import { rateLimit } from '@/lib/validation'
+import { invalidateProductsCache } from '@/lib/products-cache'
 
 function normalizeId(id: string) {
   const trimmedId = id.trim()
@@ -62,7 +63,9 @@ export async function DELETE(
       )
     }
 
-    return NextResponse.json({ 
+    invalidateProductsCache()
+
+    return NextResponse.json({
       message: 'Product and related order items deleted successfully',
       action: 'force_deleted'
     })

@@ -11,8 +11,8 @@ interface ImageWithFallbackProps {
   [key: string]: any
 }
 
-export function ImageWithFallback({ src, alt, fallback = 'https://placehold.co/800x800?text=Image+Not+Available', className, ...props }: ImageWithFallbackProps) {
-  const [imgSrc, setImgSrc] = useState(src)
+export function ImageWithFallback({ src, alt, fallback = '/placeholder.svg', className, ...props }: ImageWithFallbackProps) {
+  const [imgSrc, setImgSrc] = useState(src || fallback)
   const [hasError, setHasError] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 

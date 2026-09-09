@@ -3,6 +3,12 @@ import { supabase } from '@/lib/db'
 import { requireAdminAuth } from '@/lib/auth'
 import { validateInput, createProductSchema, rateLimit } from '@/lib/validation'
 import { isTestProductName } from '@/lib/catalog'
+import {
+  getCachedProducts,
+  getStaleProducts,
+  setCachedProducts,
+  invalidateProductsCache,
+} from '@/lib/products-cache'
 
 function buildProductPayload(validatedData: Record<string, unknown>) {
   const payload: Record<string, unknown> = {
@@ -26,6 +32,17 @@ function buildProductPayload(validatedData: Record<string, unknown>) {
 }
 
 export async function GET() {
+  // Serve warm instances instantly without hitting Supabase on every request.
+  const cached = getCachedProducts()
+  if (cached) {
+    return NextResponse.json(cached, {
+      headers: {
+        'X-Cache': 'HIT',
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
+    })
+  }
+
   try {
     // Fetch products from database
     const { data: products, error } = await supabase
@@ -68,9 +85,30 @@ export async function GET() {
       return true
     })
 
-    return NextResponse.json(uniqueProducts)
+    setCachedProducts(uniqueProducts)
+
+    return NextResponse.json(uniqueProducts, {
+      headers: {
+        'X-Cache': 'MISS',
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
+    })
   } catch (error) {
     console.error('Error fetching products:', error)
+
+    // Supabase is down but we have a previous payload: serve it stale so the
+    // storefront keeps rendering instead of going blank.
+    const stale = getStaleProducts()
+    if (stale) {
+      return NextResponse.json(stale, {
+        headers: {
+          'X-Cache': 'STALE',
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=600',
+          Warning: '110 - "Response is stale (database unreachable)"',
+        },
+      })
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch products' },
       { status: 500 }
@@ -162,6 +200,8 @@ export async function POST(request: Request) {
       stockQuantity: product.stock_quantity,
       category: product.category,
     }
+
+    invalidateProductsCache()
 
     return NextResponse.json(transformedProduct, { status: 201 })
   } catch (error) {

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { invalidateProductsCache } from '@/lib/products-cache'
 
 export async function POST() {
   try {
@@ -39,9 +40,11 @@ export async function POST() {
       })
     }
 
-    return NextResponse.json({ 
-      success: true, 
-      results 
+    invalidateProductsCache()
+
+    return NextResponse.json({
+      success: true,
+      results
     })
   } catch (_error) {
     return NextResponse.json(

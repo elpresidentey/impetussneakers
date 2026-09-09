@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/db'
 import { requireAdminAuth } from '@/lib/auth'
 import { validateInput, updateProductSchema, rateLimit } from '@/lib/validation'
+import { invalidateProductsCache } from '@/lib/products-cache'
 
 function normalizeId(id: string) {
   const trimmedId = id.trim()
@@ -155,6 +156,8 @@ export async function PUT(
       category: product.category,
     }
 
+    invalidateProductsCache()
+
     return NextResponse.json(transformedProduct)
   } catch (error) {
     if (error instanceof Error) {
@@ -223,7 +226,9 @@ export async function DELETE(
         )
       }
 
-      return NextResponse.json({ 
+      invalidateProductsCache()
+
+      return NextResponse.json({
         message: 'Product has existing orders and cannot be deleted. It has been marked as out of stock instead.',
         action: 'marked_out_of_stock',
         product: updatedProduct
@@ -253,7 +258,9 @@ export async function DELETE(
       )
     }
 
-    return NextResponse.json({ 
+    invalidateProductsCache()
+
+    return NextResponse.json({
       message: 'Product deleted successfully',
       action: 'deleted'
     })

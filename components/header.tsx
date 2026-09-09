@@ -30,7 +30,6 @@ export function Header({ onSearchOpen, onCartOpen, onAuthOpen: _onAuthOpen }: He
     { href: '#collections', label: 'Collections' },
     { href: '#shop', label: 'Shop' },
     { href: '/orders', label: 'Orders' },
-    { href: '/vendor', label: 'Sell With Us' },
   ]
 
   const solid = isScrolled || mobileMenuOpen

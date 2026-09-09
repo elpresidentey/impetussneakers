@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, Store, Mail } from 'lucide-react'
+import { ArrowRight, Mail } from 'lucide-react'
 import { Header } from '@/components/header'
 import { ProductCard } from '@/components/product-card'
 import { QuickViewModal } from '@/components/quick-view-modal'
@@ -227,10 +227,13 @@ export default function Page() {
     const fetchProducts = async () => {
       try {
         const response = await fetch('/api/products')
-        if (response.ok) {
+        if (!response.ok) {
+          throw new Error(`Products API failed with status ${response.status}`)
+        }
+        {
           const data = await response.json()
           // If API returns empty array, use fallback products
-          if (data.length === 0) {
+          if (!Array.isArray(data) || data.length === 0) {
             setProducts([
               {
                 id: 1,
@@ -546,7 +549,14 @@ export default function Page() {
               },
             ])
           } else {
-            setProducts(data)
+            // Guard against rows with missing/broken image URLs so cards never render blank
+            setProducts(
+              data.map((product: Product) => ({
+                ...product,
+                image: product.image || '/placeholder.svg',
+                alt: product.alt || product.name,
+              }))
+            )
           }
         }
       } catch (error) {
@@ -1213,103 +1223,6 @@ export default function Page() {
         </div>
       </section>
 
-      {/* Vendor Partner Banner */}
-      <section className="relative isolate overflow-hidden bg-black px-4 py-16 text-white noise-overlay md:px-8 md:py-24">
-        <Image
-          src="/flow-clark-AAkK5o8mZMg-unsplash.jpg"
-          alt="Streetwear styling and classic sneakers"
-          fill
-          className="-z-20 object-cover object-center opacity-35"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/90 via-black/75 to-black/55" />
-        <div className="relative mx-auto max-w-7xl">
-          <ScrollReveal direction="up" delay={100}>
-            <div className="grid items-end gap-12 md:grid-cols-[1.15fr_0.85fr]">
-              <div className="max-w-2xl">
-                <div className="mb-6 inline-flex items-center gap-3 border border-white/15 bg-white/5 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/75 backdrop-blur-sm">
-                  <Store className="h-4 w-4" />
-                  <span>Sell with Impetus</span>
-                </div>
-                <h2 className="text-5xl font-black uppercase leading-[0.86] md:text-7xl">
-                  Put your best pairs in front of the right people.
-                </h2>
-                <p className="mt-6 max-w-xl text-base text-white/75 md:text-lg">
-                  Apply to sell verified sneakers and streetwear with a storefront built for discovery.
-                </p>
-                <div className="mb-8 mt-8 grid grid-cols-2 gap-3">
-                  <div className="border border-white/15 bg-white/8 p-4 backdrop-blur-sm">
-                    <div className="mb-1 text-2xl font-black">₦2.5M</div>
-                    <div className="text-xs uppercase tracking-[0.14em] text-white/65">Avg monthly revenue</div>
-                  </div>
-                  <div className="border border-white/15 bg-white/8 p-4 backdrop-blur-sm">
-                    <div className="mb-1 text-2xl font-black">10K+</div>
-                    <div className="text-xs uppercase tracking-[0.14em] text-white/65">Ready customers</div>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-4 sm:flex-row">
-                  <a 
-                    href="/vendor" 
-                    className="group inline-flex h-12 items-center justify-center gap-2 bg-white px-6 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-colors hover:bg-white/85"
-                  >
-                    Start selling
-                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
-                  </a>
-                </div>
-              </div>
-              
-              <div className="relative">
-                <div className="border border-white/15 bg-white/8 p-7 backdrop-blur-md md:p-8">
-                  <h3 className="mb-6 text-xl font-black uppercase tracking-wide">Why Choose Us?</h3>
-                  <div className="space-y-5">
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-emerald-300/40 bg-emerald-400/90">
-                        <span className="text-sm font-bold text-emerald-950">✓</span>
-                      </div>
-                      <div>
-                        <h4 className="mb-1 text-sm font-semibold uppercase tracking-wide">Lowest Commission</h4>
-                        <p className="text-sm text-white/70">Only 8% vs 15-20% on other platforms</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-emerald-300/40 bg-emerald-400/90">
-                        <span className="text-sm font-bold text-emerald-950">✓</span>
-                      </div>
-                      <div>
-                        <h4 className="mb-1 text-sm font-semibold uppercase tracking-wide">Built-in Audience</h4>
-                        <p className="text-sm text-white/70">Access to 10,000+ sneaker enthusiasts</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-emerald-300/40 bg-emerald-400/90">
-                        <span className="text-sm font-bold text-emerald-950">✓</span>
-                      </div>
-                      <div>
-                        <h4 className="mb-1 text-sm font-semibold uppercase tracking-wide">Fast Payments</h4>
-                        <p className="text-sm text-white/70">Guaranteed payments within 24 hours</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border border-amber-300/50 bg-amber-400">
-                        <span className="text-sm font-bold text-amber-950">★</span>
-                      </div>
-                      <div>
-                        <h4 className="mb-1 text-sm font-semibold uppercase tracking-wide">Limited: 5% Commission</h4>
-                        <p className="text-sm text-white/70">First 50 vendors get reduced rate for 6 months</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="absolute -right-3 -top-3 border border-black/10 bg-amber-400 px-4 py-3 text-center font-black text-black shadow-xl md:-right-4 md:-top-4">
-                  <div className="text-lg leading-none">50/50</div>
-                  <div className="mt-1 text-[10px] uppercase tracking-[0.16em]">Spots Left</div>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
       {/* Latest Drops - Product Grid */}
       <section id="shop" className="section-pad-lg surface-warm border-t border-foreground/[0.06]">
         <div className="max-w-7xl mx-auto">
@@ -1757,7 +1670,6 @@ export default function Page() {
                 <h4 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-white/45">Company</h4>
                 <ul className="space-y-3">
                   <li><a href="/about" className="text-sm text-white/65 transition-colors hover:text-white">About Us</a></li>
-                  <li><a href="/vendor" className="text-sm text-white/65 transition-colors hover:text-white">Sell With Us</a></li>
                   <li><Link href="/#newsletter" className="text-sm text-white/65 transition-colors hover:text-white">Newsletter</Link></li>
                 </ul>
               </div>
