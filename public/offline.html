@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline – The Impetus</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f7f4ef;
+        color: #1c1814;
+        font-family: 'Lato', system-ui, -apple-system, sans-serif;
+        text-align: center;
+        padding: 24px;
+      }
+      main { max-width: 26rem; }
+      .brand {
+        font-size: 11px;
+        font-weight: 900;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        opacity: 0.55;
+      }
+      h1 {
+        font-size: 28px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin: 18px 0 10px;
+      }
+      p { opacity: 0.6; line-height: 1.6; margin: 0 0 28px; }
+      button {
+        border: 1px solid #1c1814;
+        background: #1c1814;
+        color: #f7f4ef;
+        font: inherit;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        padding: 14px 32px;
+        cursor: pointer;
+      }
+      button:hover { opacity: 0.9; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="brand">The &nbsp;Impetus</div>
+      <h1>You're offline</h1>
+      <p>It looks like you've lost your connection. Check your network and try again — your cart is saved on this device.</p>
+      <button onclick="location.reload()">Try again</button>
+    </main>
+  </body>
+</html>

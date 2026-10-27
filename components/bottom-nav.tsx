@@ -1,0 +1,72 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Home, Package, ShoppingCart, User } from 'lucide-react'
+import { useCart } from '@/contexts/cart-context'
+import { useAuth } from '@/contexts/auth-context'
+
+/**
+ * Global bottom navigation — the app's button navigation.
+ * Rendered on every page (except the admin panel) with plain buttons,
+ * always fresh state, and safe-area padding for installed PWA mode.
+ */
+export function BottomNav() {
+  const pathname = usePathname()
+  const { cartCount, isHydrated } = useCart()
+  const { user } = useAuth()
+
+  if (pathname?.startsWith('/admin')) return null
+
+  const accountHref = user ? '/dashboard' : '/auth/login'
+  const items = [
+    { href: '/', label: 'Home', icon: Home, active: pathname === '/' },
+    { href: '/orders', label: 'Orders', icon: Package, active: pathname === '/orders' },
+    {
+      href: '/checkout',
+      label: 'Cart',
+      icon: ShoppingCart,
+      active: pathname === '/checkout',
+      badge: isHydrated && cartCount > 0 ? cartCount : null,
+    },
+    {
+      href: accountHref,
+      label: user ? 'Account' : 'Sign in',
+      icon: User,
+      active: pathname === '/dashboard' || pathname?.startsWith('/auth'),
+    },
+  ]
+
+  return (
+    <nav
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-foreground/10 bg-[#f7f4ef]/95 backdrop-blur-xl"
+      aria-label="Primary"
+    >
+      <div className="mx-auto grid h-16 max-w-2xl grid-cols-4 pb-[env(safe-area-inset-bottom)]">
+        {items.map((item) => (
+          <Link
+            key={item.label}
+            href={item.href}
+            className={`relative flex min-w-0 flex-col items-center justify-center gap-1 transition-colors duration-200 ${
+              item.active ? 'text-foreground' : 'text-foreground/45 hover:text-foreground/80'
+            }`}
+            aria-current={item.active ? 'page' : undefined}
+          >
+            {item.active && (
+              <span className="absolute top-0 h-0.5 w-8 bg-foreground" aria-hidden />
+            )}
+            <span className="relative">
+              <item.icon className="h-5 w-5" />
+              {item.badge !== null && item.badge > 0 && (
+                <span className="absolute -right-2.5 -top-2 flex h-4 min-w-4 items-center justify-center bg-foreground px-0.5 text-[9px] font-bold leading-none text-background">
+                  {item.badge}
+                </span>
+              )}
+            </span>
+            <span className="text-[9px] font-black uppercase tracking-[0.14em]">{item.label}</span>
+          </Link>
+        ))}
+      </div>
+    </nav>
+  )
+}

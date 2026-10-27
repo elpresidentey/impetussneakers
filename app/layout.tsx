@@ -1,5 +1,5 @@
 import { Analytics } from '@vercel/analytics/next'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Lato } from 'next/font/google'
 import './globals.css'
 import { CartProvider } from '@/contexts/cart-context'
@@ -10,7 +10,9 @@ import { AnalyticsProvider } from '@/contexts/analytics-context'
 import { AuthProvider } from '@/contexts/auth-context'
 import { UIProvider } from '@/contexts/ui-context'
 import { Toast } from '@/components/toast'
-import { BackToHome } from '@/components/back-to-home'
+import { BottomNav } from '@/components/bottom-nav'
+import { InstallPrompt } from '@/components/install-prompt'
+import { PWARegister } from '@/components/pwa-register'
 
 const lato = Lato({
   weight: ['300', '400', '700', '900'],
@@ -22,6 +24,12 @@ export const metadata: Metadata = {
   title: 'The Impetus – Premium Sneaker Experience',
   description: 'Cinematic sneaker retail reimagined. Curated collections, editorial storytelling, and immersive discovery.',
   generator: 'v0.app',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'The Impetus',
+  },
   icons: {
     icon: [
       {
@@ -37,9 +45,23 @@ export const metadata: Metadata = {
         type: 'image/svg+xml',
       },
     ],
-    apple: '/apple-icon.png',
+    apple: '/icons/apple-touch-icon.png',
   },
 }
+
+export const viewport: Viewport = {
+  themeColor: '#f7f4ef',
+}
+
+// The browser's beforeinstallprompt event can fire before React hydrates.
+// This inline script captures it on the window so <InstallPrompt /> can use it later.
+const installPromptCapture = `
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    window.__impetusInstallPrompt = e;
+    window.dispatchEvent(new Event('impetus-install-available'));
+  });
+`
 
 export default function RootLayout({
   children,
@@ -48,7 +70,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${lato.variable} ${lato.className} bg-background`}>
-      <body className="font-sans antialiased bg-background text-foreground page-shell">
+      <body className="font-sans antialiased bg-background text-foreground page-shell pb-16">
         <ErrorBoundary>
           <ToastProvider>
             <AuthProvider>
@@ -57,16 +79,19 @@ export default function RootLayout({
                   <WishlistProvider>
                     <UIProvider>
                       {children}
+                      <BottomNav />
                     </UIProvider>
                   </WishlistProvider>
                 </CartProvider>
               </AnalyticsProvider>
             </AuthProvider>
             <Toast />
-            <BackToHome />
+            <InstallPrompt />
+            <PWARegister />
           </ToastProvider>
         </ErrorBoundary>
         {process.env.NODE_ENV === 'production' && <Analytics />}
+        <script dangerouslySetInnerHTML={{ __html: installPromptCapture }} />
       </body>
     </html>
   )
