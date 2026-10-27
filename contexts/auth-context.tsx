@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, ReactNode, useState, useEffect, useCallback, useMemo } from 'react'
+import type { SupabaseClient } from '@supabase/ssr'
 import { createClient } from '@/lib/supabase/client'
 
 interface User {
@@ -36,9 +37,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const supabase = useMemo(() => createClient(), [])
+  // During static prerendering (or if env vars are missing) createClient() throws.
+  // Auth is then simply disabled instead of crashing the build/page.
+  const supabase = useMemo<SupabaseClient | null>(() => {
+    try {
+      return createClient()
+    } catch {
+      return null
+    }
+  }, [])
 
   useEffect(() => {
+    if (!supabase) {
+      setIsLoading(false)
+      return
+    }
+
     // Get initial session
     const initializeAuth = async () => {
       try {
@@ -65,6 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   const login = useCallback(async (email: string, password: string) => {
+    if (!supabase) throw new Error('Authentication is not configured')
     setIsLoading(true)
     setError(null)
     try {
@@ -80,6 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   const signup = useCallback(async (email: string, password: string) => {
+    if (!supabase) throw new Error('Authentication is not configured')
     setIsLoading(true)
     setError(null)
     try {
@@ -101,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   const logout = useCallback(async () => {
+    if (!supabase) throw new Error('Authentication is not configured')
     setIsLoading(true)
     setError(null)
     try {
