@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.theimpetus.app",
+        "sha256_cert_fingerprints": ["6E:55:5E:1C:56:38:9A:B1:A3:FC:5F:81:3A:8F:2F:9A:0A:CD:2A:5B:BB:19:59:6D:7D:F7:FB:9D:30:A2:80:59"]
+      }
+    }]
