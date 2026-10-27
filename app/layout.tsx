@@ -11,6 +11,7 @@ import { AuthProvider } from '@/contexts/auth-context'
 import { UIProvider } from '@/contexts/ui-context'
 import { Toast } from '@/components/toast'
 import { BottomNav } from '@/components/bottom-nav'
+import { GlobalCart } from '@/components/global-cart'
 import { InstallPrompt } from '@/components/install-prompt'
 import { PWARegister } from '@/components/pwa-register'
 
@@ -51,6 +52,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#f7f4ef',
+  viewportFit: 'cover',
 }
 
 // The browser's beforeinstallprompt event can fire before React hydrates.
@@ -70,7 +72,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${lato.variable} ${lato.className} bg-background`}>
-      <body className="font-sans antialiased bg-background text-foreground page-shell pb-16">
+      <body className="font-sans antialiased bg-background text-foreground page-shell pb-[calc(4rem+env(safe-area-inset-bottom))]">
         <ErrorBoundary>
           <ToastProvider>
             <AuthProvider>
@@ -79,6 +81,7 @@ export default function RootLayout({
                   <WishlistProvider>
                     <UIProvider>
                       {children}
+                      <GlobalCart />
                       <BottomNav />
                     </UIProvider>
                   </WishlistProvider>

@@ -874,6 +874,13 @@ export default function Page() {
     }
   }, [isSearchOpen])
 
+  // Bottom-nav Cart button opens this page's cart modal (see components/bottom-nav.tsx)
+  useEffect(() => {
+    const openCart = () => setIsCartOpen(true)
+    window.addEventListener('impetus:open-cart', openCart)
+    return () => window.removeEventListener('impetus:open-cart', openCart)
+  }, [])
+
   useEffect(() => {
     const pools = [bentoCard1Images, bentoCard2Images, bentoCard3Images]
     const durations = [6000, 7500, 9000]
