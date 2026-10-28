@@ -14,6 +14,7 @@ import { BottomNav } from '@/components/bottom-nav'
 import { GlobalCart } from '@/components/global-cart'
 import { InstallPrompt } from '@/components/install-prompt'
 import { PWARegister } from '@/components/pwa-register'
+import { SplashScreen } from '@/components/splash-screen'
 
 const lato = Lato({
   weight: ['300', '400', '700', '900'],
@@ -74,6 +75,7 @@ export default function RootLayout({
     <html lang="en" className={`${lato.variable} ${lato.className} bg-background`}>
       <body className="font-sans antialiased bg-background text-foreground page-shell pb-[calc(4rem+env(safe-area-inset-bottom))]">
         <ErrorBoundary>
+          <SplashScreen />
           <ToastProvider>
             <AuthProvider>
               <AnalyticsProvider>

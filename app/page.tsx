@@ -17,6 +17,7 @@ import { PageTransition } from '@/components/page-transition'
 import { useCart } from '@/contexts/cart-context'
 import { useAuth } from '@/contexts/auth-context'
 import { isTestProductName } from '@/lib/catalog'
+import { notifySplashReady } from '@/components/splash-screen'
 
 // Add structured data for SEO
 const structuredData = {
@@ -854,6 +855,8 @@ export default function Page() {
         ])
       } finally {
         setIsLoadingProducts(false)
+        // Tell the splash screen the home page content is ready to reveal.
+        notifySplashReady()
       }
     }
 
