@@ -990,12 +990,12 @@ export default function Page() {
                   <p className="mt-7 max-w-lg text-base leading-relaxed text-white/80 md:text-lg">
                     Real heat, real prices. From grails to daily rotation — curated pairs for people who move different.
                   </p>
-                  <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <button onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} className="group inline-flex min-h-12 items-center justify-center gap-2 bg-white px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-all duration-300 hover:bg-white/90 active:scale-[0.98]">
+                  <div className="mt-10 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+                    <button onClick={() => document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' })} className="group inline-flex min-h-12 w-auto max-w-full items-center justify-start gap-2 bg-white px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-all duration-300 hover:bg-white/90 active:scale-[0.98]">
                       <span>Cop Your Heat</span>
                       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                     </button>
-                    <button onClick={() => document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth' })} className="inline-flex min-h-12 items-center justify-center border border-white/45 bg-white/5 px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-black active:scale-[0.98]">
+                    <button onClick={() => document.getElementById('collections')?.scrollIntoView({ behavior: 'smooth' })} className="inline-flex min-h-12 w-auto max-w-full items-center justify-start border border-white/45 bg-white/5 px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.12em] text-white backdrop-blur-sm transition-all duration-300 hover:bg-white hover:text-black active:scale-[0.98]">
                       Browse Drops
                     </button>
                   </div>
